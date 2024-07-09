@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人财务规划</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="homepage.css">
+</head>
+<body>
+    <div class="container">
+        <h1>个人财务规划</h1>
+        <form onsubmit="return validateForm()" method="get" action="epf.html">
+            <div class="frame">
+                <label for="name">姓名: <span class="required">*</span></label>
+                <input type="text" id="name" name="name" value="小帅" required>
+
+                <label for="currentAge">当前年龄: <span class="required">*</span></label>
+                <input type="number" id="currentAge" name="currentAge" value="30" required>
+
+                <label for="retirementAge">退休年龄: <span class="required">*</span></label>
+                <input type="number" id="retirementAge" name="retirementAge" required oninput="calculateYearsNeeded()">
+
+                <label for="yearsNeeded">所需年份:</label>
+                <input type="number" id="yearsNeeded" name="yearsNeeded" readonly class="calculated" value="60">
+
+                <label for="inflationRate">通胀率 (%): <span class="required">*</span></label>
+                <input type="number" id="inflationRate" name="inflationRate" value="4" min="0" step="1" required>
+            </div>
+
+            <div class="horizontal-section">
+                <div class="column frame">
+                    <h2>现在</h2>
+                    <label for="monthlySpending">每月开销: <span class="required" >*</span></label>
+                    <input type="number" id="monthlySpending" name="monthlySpending" required value="1500">
+
+                    <label for="yearlySpending">每年开销:</label>
+                    <input type="number" id="yearlySpending" name="yearlySpending" readonly class="calculated">
+                    
+                    <label for="retirementAmountNeeded">退休需要的钱:</label>
+                    <input type="number" id="retirementAmountNeeded" name="retirementAmountNeeded" readonly class="calculated">
+                </div>
+                <div class="column frame">
+                    <h2>退休时需要</h2>
+                    <label for="monthlySpendingR">每月开销 (R):</label>
+                    <input type="number" id="monthlySpendingR" name="monthlySpendingR" readonly class="calculated">
+
+                    <label for="yearlySpendingR">每年开销 (R):</label>
+                    <input type="number" id="yearlySpendingR" name="yearlySpendingR" readonly class="calculated">
+
+                    <label for="retirementAmountNeededR">退休需要的钱 (R):</label>
+                    <input type="number" id="retirementAmountNeededR" name="retirementAmountNeededR" readonly class="calculated">
+                </div>
+            </div>
+
+            <button type="button" onclick="calculateSpending()">现在计算</button>
+            <button type="submit">下一页</button>
+        </form>
+    </div>
+    <script src="homepage.js"></script>
+</body>
+</html>

@@ -1,0 +1,122 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #ffffff;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.welcome-container {
+    max-width: 800px;
+    margin: 20px;
+    padding: 40px;
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    transition: transform 0.3s ease;
+}
+
+.welcome-container:hover {
+    transform: translateY(-5px);
+}
+
+h1 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #ffffff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+p {
+    font-size: 1.2rem;
+    line-height: 1.6;
+    margin-bottom: 30px;
+}
+
+.features {
+    margin: 40px 0;
+    text-align: left;
+}
+
+.features h2 {
+    color: #ffd700;
+    font-size: 1.8rem;
+    margin-bottom: 20px;
+}
+
+.features ul {
+    list-style-type: none;
+    padding-left: 20px;
+}
+
+.features li {
+    font-size: 1.1rem;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+}
+
+.features li:before {
+    content: "✦";
+    color: #ffd700;
+    margin-right: 10px;
+    font-size: 1.2rem;
+}
+
+.cta-button {
+    display: inline-block;
+    padding: 15px 30px;
+    background-color: #ffd700;
+    color: #333;
+    text-decoration: none;
+    border-radius: 50px;
+    font-weight: bold;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px 0 rgba(255, 215, 0, 0.75);
+}
+
+.cta-button:hover {
+    background-color: #ffec00;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px 0 rgba(255, 215, 0, 0.8);
+}
+
+@media (max-width: 768px) {
+    .welcome-container {
+        padding: 30px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+
+    p, .features li {
+        font-size: 1rem;
+    }
+
+    .features h2 {
+        font-size: 1.5rem;
+    }
+
+    .cta-button {
+        padding: 12px 24px;
+        font-size: 1.1rem;
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.welcome-container, h1, p, .features, .cta-button {
+    animation: fadeIn 1s ease-out;
+}

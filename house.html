@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>房屋投资计算器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="house.css">
+</head>
+<body>
+    <div class="container">
+        <h1>房屋投资计算器</h1>
+        <div class="frame">
+            <div class="input-group">
+                <label for="housePrice">屋子价格:</label>
+                <input type="number" id="housePrice" name="housePrice" required>
+            </div>
+            <div class="input-group">
+                <label for="rentAmount">租金 (每月):</label>
+                <input type="number" id="rentAmount" name="rentAmount" required>
+            </div>
+            <div class="input-group">
+                <label for="monthlyPayment">月供:</label>
+                <input type="number" id="monthlyPayment" name="monthlyPayment" value="850" required>
+            </div>
+            <div class="input-group">
+                <label for="houseAppreciationRate">屋子增长率 (%):</label>
+                <input type="number" id="houseAppreciationRate" name="houseAppreciationRate" value="5.920" step="0.001" required>
+            </div>
+            <div class="input-group">
+                <label for="interestRate">利息 (%):</label>
+                <input type="number" id="interestRate" name="interestRate" value="4.25" step="0.01" required>
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="calculateHouseInvestment()">计算</button>
+            </div>
+        </div>
+
+        <div id="investmentProgress" class="frame" style="display:none;">
+            <h2>投资概况</h2>
+            <div id="progressBar">
+                <div id="progressFill"></div>
+            </div>
+            <p id="finalDebt"></p>
+            <p id="netPassiveIncome"></p>
+        </div>
+
+        <div id="houseCalculator" style="display:none;">
+            <div class="table-container">
+                <table id="houseTable">
+                    <thead>
+                        <tr>
+                            <th>第几年</th>
+                            <th>你多少岁</th>
+                            <th>屋价</th>
+                            <th>租金月收入</th>
+                            <th>租金年收入</th>
+                            <th>欠银行</th>
+                            <th>利息</th>
+                            <th>年尾欠款</th>
+                            <th>净被动收入</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="house.js"></script>
+</body>
+</html>

@@ -1,0 +1,102 @@
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EPF 计算器</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="epf.css">
+    <script src="epf.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>EPF 计算器</h1>
+        <div class="frame">
+            <div class="input-group">
+                <label for="name">姓名:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="input-group">
+                <label for="salaryIncreaseRate">薪水增加率 (%):</label>
+                <input type="number" id="salaryIncreaseRate" name="salaryIncreaseRate" value="1" required>
+            </div>
+            <div class="input-group">
+                <label for="currentAge">当前年龄:</label>
+                <input type="number" id="currentAge" name="currentAge" required>
+            </div>
+            <div class="input-group">
+                <label for="retirementAge">退休年龄:</label>
+                <input type="number" id="retirementAge" name="retirementAge" required>
+            </div>
+            <div class="input-group">
+                <label for="yearsNeeded">所需年份:</label>
+                <input type="number" id="yearsNeeded" name="yearsNeeded" required>
+            </div>
+            <div class="input-group">
+                <label for="inflationRate">通胀率 (%):</label>
+                <input type="number" id="inflationRate" name="inflationRate" value="4" readonly>
+            </div>
+            <div class="input-group">
+                <label for="currentEpf">现在 EPF 有:</label>
+                <input type="number" id="currentEpf" name="currentEpf" required value="40000">
+            </div>
+            <div class="input-group">
+                <label for="epfRate">EPF 利率 (%):</label>
+                <input type="number" id="epfRate" name="epfRate" value="6" required>
+            </div>
+            <div class="input-group">
+                <label for="currentSalary">现在薪水:</label>
+                <input type="number" id="currentSalary" name="currentSalary" required value="4000">
+            </div>
+            <div class="input-group">
+                <label for="epfNow">EPF:</label>
+                <input type="number" id="epfNow" name="epfNow" readonly class="calculated">
+            </div>
+            <div class="input-group">
+                <label for="currentSalaryR">现在薪水 (R):</label>
+                <input type="number" id="currentSalaryR" name="currentSalaryR" readonly class="calculated">
+            </div>
+            <div class="input-group">
+                <label for="epfR">EPF (R):</label>
+                <input type="number" id="epfR" name="epfR" readonly class="calculated">
+            </div>
+            <div class="button-group">
+                <button type="button" onclick="calculateEPF()">计算</button>
+                <button id="toggleButton" type="button">显示 EPF 计算器</button>
+            </div>
+
+            <div id="goalProgress" class="frame">
+                <h2>退休需要的钱</h2>
+                <div id="progressBar">
+                    <div id="progressFill"></div>
+                </div>
+                <p id="goalAmount"></p>
+                <p id="goalProgressPercentage"></p>
+                <p id="achievedYear"></p>
+                <p id="yearsToAchieve"></p>
+                <p id="exceededAmount"></p>
+            </div>
+        </div>
+
+        <div id="epfCalculator" style="display:none;">
+            <div class="table-container">
+                <table id="epfTable">
+                    <thead>
+                        <tr>
+                            <th>年</th>
+                            <th>月收</th>
+                            <th>年收</th>
+                            <th>EPF</th>
+                            <th>累计</th>
+                            <th>利息</th>
+                            <th>总额</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Rows will be added here dynamically -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
