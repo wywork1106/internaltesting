@@ -15,7 +15,7 @@ body {
     background-color: var(--primary-bg);
     color: var(--secondary-text);
     min-height: 100vh;
-    background-image: url('Image/logo.png');
+    background-image: url('logo.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
