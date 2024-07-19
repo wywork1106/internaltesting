@@ -1,24 +1,48 @@
+:root {
+    --primary-bg: #1C2841;
+    --primary-text: #FFD700;
+    --secondary-text: #FFFFFF;
+    --accent-color: #FFD700;
+    --container-bg: rgba(28, 40, 65, 0.8); /* Semi-transparent dark blue */
+}
+
 body {
     font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #ffffff;
     min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
+    background-image: url('Image/logo.png'); /* Update this path to your background image */
+    background-size: contain; /* This will ensure the entire image is visible */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: var(--primary-bg); /* Fallback color */
+    color: var(--secondary-text);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(28, 40, 65, 0.7);
+    z-index: -1;
 }
 
 .welcome-container {
-    max-width: 800px;
+    max-width: 90%;
+    width: 800px;
     margin: 20px;
     padding: 40px;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--container-bg);
     border-radius: 20px;
     box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
     border: 1px solid rgba(255, 255, 255, 0.18);
     transition: transform 0.3s ease;
 }
@@ -28,14 +52,14 @@ body {
 }
 
 h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     margin-bottom: 20px;
-    color: #ffffff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    color: var(--primary-text);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 p {
-    font-size: 1.2rem;
+    font-size: 1.1rem;
     line-height: 1.6;
     margin-bottom: 30px;
 }
@@ -46,9 +70,10 @@ p {
 }
 
 .features h2 {
-    color: #ffd700;
+    color: var(--primary-text);
     font-size: 1.8rem;
     margin-bottom: 20px;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .features ul {
@@ -65,7 +90,7 @@ p {
 
 .features li:before {
     content: "✦";
-    color: #ffd700;
+    color: var(--accent-color);
     margin-right: 10px;
     font-size: 1.2rem;
 }
@@ -73,8 +98,8 @@ p {
 .cta-button {
     display: inline-block;
     padding: 15px 30px;
-    background-color: #ffd700;
-    color: #333;
+    background-color: var(--accent-color);
+    color: var(--primary-bg);
     text-decoration: none;
     border-radius: 50px;
     font-weight: bold;
@@ -84,34 +109,39 @@ p {
 }
 
 .cta-button:hover {
-    background-color: #ffec00;
+    background-color: #FFFFFF;
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px 0 rgba(255, 215, 0, 0.8);
+    box-shadow: 0 6px 20px 0 rgba(255, 255, 255, 0.8);
 }
 
 @media (max-width: 768px) {
+    body {
+        background-size: contain;
+        background-position: center top; /* Adjust this if needed */
+    }
+
     .welcome-container {
-        padding: 30px;
+        padding: 20px;
+        margin: 10px;
     }
 
     h1 {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
     }
 
     p, .features li {
-        font-size: 1rem;
+        font-size: 0.9rem;
     }
 
     .features h2 {
-        font-size: 1.5rem;
+        font-size: 1.3rem;
     }
 
     .cta-button {
-        padding: 12px 24px;
-        font-size: 1.1rem;
+        padding: 10px 20px;
+        font-size: 1rem;
     }
 }
-
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
