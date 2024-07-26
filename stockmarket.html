@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股票市场计算器</title>
+    <link rel="stylesheet" href="stockmarket.css">
+</head>
+<body>
+    <div class="container">
+        <h1>股票市场计算器</h1>
+
+        <div class="frame">
+            <div class="input-group">
+                <label for="currentAge">当前年龄: (自动填充)</label>
+                <input type="number" id="currentAge" required readonly>
+            </div>
+            
+            <div class="input-group">
+                <label for="retirementAge">退休年龄: (自动填充)</label>
+                <input type="number" id="retirementAge" required readonly>
+            </div>
+            
+            <div class="input-group">
+                <label for="yearsNeeded">所需年份: (自动填充)</label>
+                <input type="number" id="yearsNeeded" required readonly>
+            </div>
+
+            <div class="input-group">
+                <label for="monthlyInvestment">每个月愿意投资多少？ <span class="required">*</span></label>
+                <input type="number" id="monthlyInvestment" required>
+            </div>
+
+            <div class="input-group">
+                <label for="growthRate">增涨率 (%): <span class="required">*</span></label>
+                <input type="number" id="growthRate" step="0.1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="dividendRate">股息率 (%): <span class="required">*</span></label>
+                <input type="number" id="dividendRate" step="0.1" required>
+            </div>
+
+            <div class="input-group">
+                <label for="currentStockValue">现有股票金额: <span class="required">*</span></label>
+                <input type="number" id="currentStockValue" required>
+            </div>
+
+            <div class="button-group">
+                <button id="calculateButton">计算</button>
+                <button id="progressButton">人生进度</button>
+                <button id="toggleStockCalculatorButton">显示 股票 计算器</button>
+                <button id="nextButton">下一个</button>
+            </div>
+        </div>
+
+        <div id="investmentProgress" class="frame" style="display:none;">
+            <h2>投资概况</h2>
+            <div id="progressBar">
+                <div id="progressFill"></div>
+            </div>
+            <p id="retirementAmountNeeded"></p>
+            <p id="stockValue"></p>
+            <p id="progressPercentage"></p>
+        </div>
+
+        <div id="lifeProgress" class="progress-info" style="display:none;">
+            <h2>人生进度</h2>
+            <div class="progress-bar">
+                <div class="progress-segment epf"></div>
+                <div class="progress-segment real-estate"></div>
+                <div class="progress-segment stocks"></div>
+                <div class="progress-segment remaining"></div>
+            </div>
+            <div class="progress-details">
+                <div class="progress-item">
+                    <div class="progress-item-label">目标退休金额:</div>
+                    <div class="progress-item-value" id="targetRetirementAmount"></div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-item-label">EPF:</div>
+                    <div class="progress-item-value" id="epfAmount"></div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-item-label">房地产:</div>
+                    <div class="progress-item-value" id="realEstateAmount"></div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-item-label">股票:</div>
+                    <div class="progress-item-value" id="stockAmount"></div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-item-label">总计:</div>
+                    <div class="progress-item-value" id="totalAmount"></div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-item-label">距离退休目标还差:</div>
+                    <div class="progress-item-value" id="shortfall"></div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-item-label">退休后每月预计:</div>
+                    <div class="progress-item-value" id="monthlyEstimate"></div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-item-label">目标完成度:</div>
+                    <div class="progress-item-value" id="progressPercentage"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="stockCalculator" class="frame" style="display:none;">
+            <h2>股票计算器</h2>
+            <div class="table-container">
+                <table id="stockTable">
+                    <thead>
+                        <tr>
+                            <th>第几年</th>
+                            <th>你多少岁</th>
+                            <th>现有股票价值</th>
+                            <th>一年投资额度</th>
+                            <th>今年股票价值</th>
+                            <th>股息</th>
+                            <th>增值</th>
+                            <th>年尾股票价值</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <script src="stockmarket.js"></script>
+</body>
+</html>

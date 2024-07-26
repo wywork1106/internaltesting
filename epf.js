@@ -182,25 +182,80 @@ function generateTable(currentSalary, inflationRate, currentEpf, epfRate, salary
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('toggleButton').addEventListener('click', function() {
-        var calculator = document.getElementById('epfCalculator');
-        if (calculator.style.display === 'none' || calculator.style.display === '') {
-            calculator.style.display = 'block';
-            this.textContent = '隐藏 EPF 计算器';
-        } else {
-            calculator.style.display = 'none';
-            this.textContent = '显示 EPF 计算器';
-        }
-    });
+    const calculateButton = document.getElementById('calculateButton');
+    const progressButton = document.getElementById('progressButton');
+    const toggleEpfButton = document.getElementById('toggleEpfButton');
+    const nextButton = document.getElementById('nextButton');
 
-    document.getElementById('progressButton').addEventListener('click', function() {
-        const progressInfo = document.getElementById('progressInfo');
-        if (progressInfo.style.display === 'none') {
-            progressInfo.style.display = 'block';
-            this.textContent = '隐藏人生进度';
-        } else {
-            progressInfo.style.display = 'none';
-            this.textContent = '人生进度';
-        }
-    });
+    if (calculateButton) {
+        calculateButton.addEventListener('click', function() {
+            if (validateForm()) {
+                calculateEPF();
+            }
+        });
+    }
+
+    if (progressButton) {
+        progressButton.addEventListener('click', function() {
+            const progressInfo = document.getElementById('progressInfo');
+            if (progressInfo) {
+                if (progressInfo.style.display === 'none') {
+                    progressInfo.style.display = 'block';
+                    this.textContent = '隐藏人生进度';
+                } else {
+                    progressInfo.style.display = 'none';
+                    this.textContent = '人生进度';
+                }
+            }
+        });
+    }
+
+    if (toggleEpfButton) {
+        toggleEpfButton.addEventListener('click', function() {
+            var calculator = document.getElementById('epfCalculator');
+            if (calculator) {
+                if (calculator.style.display === 'none' || calculator.style.display === '') {
+                    calculator.style.display = 'block';
+                    this.textContent = '隐藏 EPF 计算器';
+                } else {
+                    calculator.style.display = 'none';
+                    this.textContent = '显示 EPF 计算器';
+                }
+            }
+        });
+    }
+
+    if (nextButton) {
+        nextButton.addEventListener('click', goToNextPage);
+    }
 });
+
+function goToNextPage() {
+    const retirementAmountNeededElement = document.getElementById('retirementAmountNeeded');
+    const epfTableLastRow = document.querySelector('#epfTable tbody tr:last-child');
+
+    if (!retirementAmountNeededElement || !epfTableLastRow) {
+        alert('请先完成 EPF 计算。');
+        return;
+    }
+
+    const retirementAmountNeeded = retirementAmountNeededElement.value;
+    const epfFinalAmount = epfTableLastRow.cells[6].textContent;
+
+    const confirmationMessage = `
+        退休需要的钱: RM ${retirementAmountNeeded}
+        EPF 最终金额: RM ${epfFinalAmount}
+        
+        确认这些数据并继续到房屋投资计算器吗？
+    `;
+
+    if (confirm(confirmationMessage)) {
+        localStorage.setItem('retirementAmountNeeded', retirementAmountNeeded);
+        localStorage.setItem('epfFinalAmount', epfFinalAmount);
+        localStorage.setItem('currentAge', document.getElementById('currentAge').value);
+        localStorage.setItem('retirementAge', document.getElementById('retirementAge').value);
+        localStorage.setItem('yearsNeeded', document.getElementById('yearsNeeded').value);
+    
+        window.location.href = 'house.html';
+    }
+}

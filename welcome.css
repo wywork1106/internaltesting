@@ -14,7 +14,7 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    background-image: url('logo.png'); /* Update this path to your background image */
+    background-image: url('Image/logo.png'); /* Update this path to your background image */
     background-size: contain; /* This will ensure the entire image is visible */
     background-position: center;
     background-repeat: no-repeat;

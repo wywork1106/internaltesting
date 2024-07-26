@@ -13,24 +13,24 @@
         
         <div class="frame">
             <div class="input-group">
-                <label for="name">姓名:</label>
-                <input type="text" id="name" required>
+                <label for="name">姓名: <span class="required">*</span></label>
+                <input type="text" id="name" name="name" required placeholder="请输入您的姓名">
             </div>
             <div class="input-group">
-                <label for="currentAge">当前年龄:</label>
-                <input type="number" id="currentAge" required>
+                <label for="currentAge">当前年龄: <span class="required">*</span></label>
+                <input type="number" id="currentAge" name="currentAge" required placeholder="请输入您的当前年龄">
             </div>
             <div class="input-group">
-                <label for="retirementAge">退休年龄:</label>
-                <input type="number" id="retirementAge" required>
+                <label for="retirementAge">退休年龄: <span class="required">*</span></label>
+                <input type="number" id="retirementAge" name="retirementAge" required placeholder="预计退休年龄">
             </div>
             <div class="input-group">
                 <label for="yearsNeeded">所需年份:</label>
                 <input type="number" id="yearsNeeded" readonly>
             </div>
             <div class="input-group">
-                <label for="inflationRate">通胀率 (%):</label>
-                <input type="number" id="inflationRate" step="0.1" required>
+                <label for="inflationRate">通胀率 (%): <span class="required">*</span></label>
+                <input type="number" id="inflationRate" name="inflationRate" step="0.1" required placeholder="例如: 2.5">
             </div>
         </div>
     
@@ -38,16 +38,16 @@
             <div class="column frame">
                 <h2>现在</h2>
                 <div class="input-group">
-                    <label for="monthlySpending">每月开销: *</label>
-                    <input type="number" id="monthlySpending" required>
+                    <label for="monthlySpending">每月开销: <span class="required">*</span></label>
+                    <input type="number" id="monthlySpending" name="monthlySpending" required placeholder="当前每月开销">
                 </div>
                 <div class="input-group">
                     <label for="yearlySpending">每年开销:</label>
-                    <input type="text" id="yearlySpending" readonly>
+                    <input type="text" id="yearlySpending" name="yearlySpending" readonly>
                 </div>
                 <div class="input-group">
                     <label for="retirementAmountNeeded">退休需要的钱:</label>
-                    <input type="text" id="retirementAmountNeeded" readonly>
+                    <input type="text" id="retirementAmountNeeded" name="retirementAmountNeeded" readonly>
                 </div>
             </div>
     
@@ -55,7 +55,7 @@
                 <h2>退休时需要</h2>
                 <div class="input-group">
                     <label for="monthlySpendingR">每月开销 (R):</label>
-                    <input type="text" id="monthlySpendingR" readonly>
+                    <input type="text" id="monthlySpendingR" name="monthlySpendingR" readonly>
                 </div>
                 <div class="input-group">
                     <label for="yearlySpendingR">每年开销 (R):</label>
@@ -73,17 +73,6 @@
             <button onclick="goToNextPage()" class="cta-button" >下一页</button>
         </div>
     
-        <div id="goalProgress" class="frame" style="display: none;">
-            <h2>退休目标进度</h2>
-            <div id="progressBar">
-                <div id="progressFill"></div>
-            </div>
-            <p id="goalAmount"></p>
-            <p id="goalProgressPercentage"></p>
-            <p id="achievedYear"></p>
-            <p id="yearsToAchieve"></p>
-            <p id="exceededAmount"></p>
-        </div>
     </div>
     <script src="homepage.js"></script>
 </body>
