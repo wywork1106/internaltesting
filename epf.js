@@ -187,6 +187,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const toggleEpfButton = document.getElementById('toggleEpfButton');
     const nextButton = document.getElementById('nextButton');
 
+    if (nextButton) {
+      nextButton.addEventListener('click', goToNextPage);
+    } else {
+      console.error('Next button not found');
+    }
+
+
     if (calculateButton) {
         calculateButton.addEventListener('click', function() {
             if (validateForm()) {
@@ -223,10 +230,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
         });
-    }
-
-    if (nextButton) {
-        nextButton.addEventListener('click', goToNextPage);
     }
 });
 
