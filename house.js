@@ -10,6 +10,10 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('nextButton').addEventListener('click', goToNextPage);
 });
 
+function formatNumber(number) {
+    return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+}
+
 function loadDataFromStorage() {
     const retirementAmountNeeded = localStorage.getItem('retirementAmountNeeded');
     const epfFinalAmount = localStorage.getItem('epfFinalAmount');
@@ -61,26 +65,28 @@ function loadDataFromUrl() {
     updateLifeProgress();
 }
 
+
+
 function calculateHouseInvestment() {
     const housePrice = parseFloat(document.getElementById('housePrice').value);
     const rentAmount = parseFloat(document.getElementById('rentAmount').value);
-    const monthlyPayment = parseFloat(document.getElementById('monthlyPayment').value);
     const houseAppreciationRate = parseFloat(document.getElementById('houseAppreciationRate').value) / 100;
     const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
+    const additionalPaymentPercentage = parseFloat(document.getElementById('additionalPaymentPercentage').value) / 100;
 
-    if (isNaN(housePrice) || isNaN(rentAmount) || isNaN(monthlyPayment) || isNaN(houseAppreciationRate) || isNaN(interestRate)) {
+    if (isNaN(housePrice) || isNaN(rentAmount) || isNaN(houseAppreciationRate) || 
+        isNaN(interestRate) || isNaN(additionalPaymentPercentage)) {
         alert('请输入有效的数值。');
         return false;
     }
 
-    // Get retirement information (for now, we'll use placeholder values)
     const currentAge = 30; // Example value
     const retirementAge = 60; // Example value
     const yearsUntilRetirement = retirementAge - currentAge;
 
-    const finalNetPassiveIncome = generateTable(housePrice, rentAmount, monthlyPayment, houseAppreciationRate, interestRate, currentAge, yearsUntilRetirement);
+    const finalNetPassiveIncome = generateTable(housePrice, rentAmount, 
+        houseAppreciationRate, interestRate, currentAge, yearsUntilRetirement, additionalPaymentPercentage);
 
-    // Update globalNetPassiveIncome after calculation
     globalNetPassiveIncome = finalNetPassiveIncome;
     updateLifeProgress();
 
@@ -90,37 +96,46 @@ function calculateHouseInvestment() {
     return true;
 }
 
-function generateTable(housePrice, rentAmount, monthlyPayment, houseAppreciationRate, interestRate, currentAge, yearsUntilRetirement) {
+function generateTable(housePrice, rentAmount, houseAppreciationRate, 
+    interestRate, currentAge, yearsUntilRetirement, additionalPaymentPercentage) {
     const tableBody = document.querySelector('#houseTable tbody');
     if (!tableBody) {
         console.error('Table body not found');
         return 0;
     }
-    tableBody.innerHTML = ''; // Clear existing rows
+    tableBody.innerHTML = '';
 
     let currentHousePrice = housePrice;
     let debtToBank = housePrice;
     let finalNetPassiveIncome = 0;
 
+    const monthlyPayment = rentAmount * (1 + additionalPaymentPercentage);
+    const yearlyPayment = monthlyPayment * 12;
+
     for (let year = 1; year <= yearsUntilRetirement; year++) {
         const row = tableBody.insertRow();
-        
+
         const yearlyRentalIncome = rentAmount * 12;
         const interestAmount = debtToBank * interestRate;
-        const yearEndDebt = Math.max(0, debtToBank - (monthlyPayment * 12) + interestAmount);
+        const yearEndDebt = Math.max(0, debtToBank - yearlyPayment + interestAmount);
         const netPassiveIncomeYear = yearlyRentalIncome - interestAmount;
+        const houseValue = currentHousePrice - yearEndDebt;
 
         row.insertCell(0).textContent = year;
-        row.insertCell(1).textContent = currentAge + year;
-        row.insertCell(2).textContent = currentHousePrice.toFixed(2);
-        row.insertCell(3).textContent = rentAmount.toFixed(2);
-        row.insertCell(4).textContent = yearlyRentalIncome.toFixed(2);
-        row.insertCell(5).textContent = debtToBank.toFixed(2);
-        row.insertCell(6).textContent = interestAmount.toFixed(2);
-        row.insertCell(7).textContent = yearEndDebt.toFixed(2);
-        row.insertCell(8).textContent = netPassiveIncomeYear.toFixed(2);
+        row.insertCell(1).textContent = currentAge + year - 1;
+        row.insertCell(2).textContent = formatNumber(currentHousePrice);
+        row.insertCell(3).textContent = formatNumber(rentAmount);
+        row.insertCell(4).textContent = formatNumber(yearlyRentalIncome);
+        row.insertCell(5).textContent = formatNumber(debtToBank);
+        row.insertCell(6).textContent = formatNumber(interestAmount);
+        row.insertCell(7).textContent = formatNumber(monthlyPayment);
+        row.insertCell(8).textContent = formatNumber(yearEndDebt);
+        row.insertCell(9).textContent = formatNumber(netPassiveIncomeYear);
+        row.insertCell(10).textContent = formatNumber(houseValue);
 
+        // Update for next year
         currentHousePrice *= (1 + houseAppreciationRate);
+        rentAmount *= (1 + houseAppreciationRate);
         debtToBank = yearEndDebt;
 
         if (year === yearsUntilRetirement) {
@@ -131,7 +146,6 @@ function generateTable(housePrice, rentAmount, monthlyPayment, houseAppreciation
     updateProgressInfo(finalNetPassiveIncome);
     return finalNetPassiveIncome;
 }
-
 function updateProgressInfo(finalNetPassiveIncome) {
     const progressPercentage = (finalNetPassiveIncome / globalRetirementAmountNeeded) * 100;
 
