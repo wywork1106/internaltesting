@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function formatNumber(number) {
-    return number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+    return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function loadDataFromStorage() {
@@ -22,9 +22,12 @@ function loadDataFromStorage() {
         globalRetirementAmountNeeded = parseFloat(retirementAmountNeeded.replace(/,/g, ''));
         globalEpfFinalAmount = parseFloat(epfFinalAmount.replace(/,/g, ''));
 
-        updateElementContent('retirementAmountNeeded', `退休需要的钱: <span class="highlight">RM ${globalRetirementAmountNeeded.toFixed(2)}</span>`);
-        updateElementContent('targetRetirementAmount', `RM ${globalRetirementAmountNeeded.toFixed(2)}`);
-        updateElementContent('epfAmount', `RM ${globalEpfFinalAmount.toFixed(2)}`);
+        // Update retirement amount needed (目标退休金额)
+        updateElementContent('retirementAmountNeeded', `退休需要的钱: <span class="highlight">RM ${formatNumber(globalRetirementAmountNeeded)}</span>`);
+        updateElementContent('targetRetirementAmount', `RM ${formatNumber(globalRetirementAmountNeeded)}`);
+
+        // Update EPF amount
+        updateElementContent('epfAmount', `RM ${formatNumber(globalEpfFinalAmount)}`);
 
         updateLifeProgress();
     } else {
@@ -139,7 +142,7 @@ function generateTable(housePrice, rentAmount, houseAppreciationRate,
         debtToBank = yearEndDebt;
 
         if (year === yearsUntilRetirement) {
-            finalNetPassiveIncome = netPassiveIncomeYear;
+            finalNetPassiveIncome = houseValue;
         }
     }
 
@@ -159,14 +162,14 @@ function updateLifeProgress() {
     const totalAmount = globalEpfFinalAmount + globalNetPassiveIncome;
     const progressPercentage = (totalAmount / globalRetirementAmountNeeded) * 100;
 
-    updateElementContent('realEstateAmount', `RM ${globalNetPassiveIncome.toFixed(2)}`);
-    updateElementContent('totalAmount', `RM ${totalAmount.toFixed(2)}`);
+    updateElementContent('realEstateAmount', `RM ${formatNumber(globalNetPassiveIncome)}`);
+    updateElementContent('totalAmount', `RM ${formatNumber(totalAmount)}`);
     
     const shortfall = Math.max(0, globalRetirementAmountNeeded - totalAmount);
-    updateElementContent('shortfall', `RM ${shortfall.toFixed(2)}`);
+    updateElementContent('shortfall', `RM ${formatNumber(shortfall)}`);
     
     const monthlyEstimate = (totalAmount * 0.04) / 12; // Assuming 4% annual withdrawal rate
-    updateElementContent('monthlyEstimate', `RM ${monthlyEstimate.toFixed(2)}`);
+    updateElementContent('monthlyEstimate', `RM ${formatNumber(monthlyEstimate)}`);
 
     // Update progress bar
     updateElementStyle('progressFill', 'width', `${Math.min(progressPercentage, 100)}%`);

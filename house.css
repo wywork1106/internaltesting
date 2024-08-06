@@ -98,7 +98,7 @@ input {
     margin-top: 20px;
 }
 
-button {
+.button-group button {
     padding: 12px 24px;
     background-color: var(--accent-color);
     color: var(--primary-bg);
@@ -111,10 +111,20 @@ button {
     box-shadow: 0 4px 15px 0 rgba(255, 215, 0, 0.75);
 }
 
-button:hover {
+.button-group button:hover {
     background-color: #FFFFFF;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px 0 rgba(255, 215, 0, 0.8);
+}
+
+@media (max-width: 768px) {
+    .button-group {
+        flex-direction: column;
+    }
+
+    .button-group button {
+        margin-bottom: 10px;
+    }
 }
 
 .table-container {
@@ -223,8 +233,3 @@ tr:nth-child(even) {
 .progress-item:nth-child(7) .progress-item-value { color: #4CAF50; } /* Monthly Estimate */
 .progress-item:nth-child(8) .progress-item-value { color: #FFD700; } /* Progress Percentage */
 
-@media (max-width: 768px) {
-    .progress-item {
-        flex-basis: 100%;
-    }
-}

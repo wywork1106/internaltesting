@@ -4,6 +4,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>EPF 计算器</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!---This for export pdf only-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.29/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-font-chinese-msyh@1.0.1/dist/jspdf-font-chinese-msyh.min.js"></script>
+    
+
     <link rel="stylesheet" href="epf.css">
     <script src="epf.js"></script>
 </head>
@@ -77,6 +84,7 @@
                 <button type="button" id="calculateButton">计算</button>
                 <button type="button" id="progressButton">人生进度</button>
                 <button type="button" id="toggleEpfButton">显示 EPF 计算器</button>
+                <button id="exportPdfButton" type="button">导出 PDF</button>
                 <button type="button" id="nextButton">下一个</button>
             </div>
         </form>

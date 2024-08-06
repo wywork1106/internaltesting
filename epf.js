@@ -186,6 +186,11 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressButton = document.getElementById('progressButton');
     const toggleEpfButton = document.getElementById('toggleEpfButton');
     const nextButton = document.getElementById('nextButton');
+    const exportPdfButton = document.getElementById('exportPdfButton');
+    if (exportPdfButton) {
+        exportPdfButton.addEventListener('click', exportToPDF);
+    }
+
 
     if (nextButton) {
       nextButton.addEventListener('click', goToNextPage);
@@ -232,6 +237,60 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function exportToPDF() {
+    try {
+        const doc = new jspdf.jsPDF();
+
+        const name = document.getElementById('name').value || 'User';
+
+        // Add title
+        doc.setFontSize(18);
+        doc.text('EPF Calculator Summary', 105, 15, { align: 'center' });
+
+        // Add user information
+        doc.setFontSize(12);
+        doc.text(`Name: ${name}`, 20, 30);
+        doc.text(`Current Age: ${document.getElementById('currentAge').value || 'N/A'}`, 20, 40);
+        doc.text(`Retirement Age: ${document.getElementById('retirementAge').value || 'N/A'}`, 20, 50);
+        doc.text(`Years Needed: ${document.getElementById('yearsNeeded').value || 'N/A'}`, 20, 60);
+        doc.text(`Inflation Rate: ${document.getElementById('inflationRate').value || '0'}%`, 20, 70);
+        doc.text(`Current EPF Balance: RM ${document.getElementById('currentEpf').value || '0'}`, 20, 80);
+        doc.text(`EPF Interest Rate: ${document.getElementById('epfRate').value || '0'}%`, 20, 90);
+        doc.text(`Current Salary: RM ${document.getElementById('currentSalary').value || '0'}`, 20, 100);
+
+        // Add progress information
+        doc.setFontSize(14);
+        doc.text('Retirement Progress', 105, 120, { align: 'center' });
+        doc.setFontSize(12);
+        doc.text(`Target Retirement Amount: ${document.getElementById('targetRetirementAmount').textContent || 'N/A'}`, 20, 130);
+        doc.text(`EPF Amount: ${document.getElementById('epfAmount').textContent || 'N/A'}`, 20, 140);
+        doc.text(`Total: ${document.getElementById('totalAmount').textContent || 'N/A'}`, 20, 150);
+        doc.text(`Shortfall to Retirement Goal: ${document.getElementById('shortfall').textContent || 'N/A'}`, 20, 160);
+        doc.text(`Estimated Monthly after Retirement: ${document.getElementById('monthlyEstimate').textContent || 'N/A'}`, 20, 170);
+
+        // Add EPF table
+        doc.addPage();
+        doc.setFontSize(14);
+        doc.text('EPF Calculation Table', 105, 15, { align: 'center' });
+        
+        const table = document.getElementById('epfTable');
+        if (table) {
+            doc.autoTable({ 
+                html: table, 
+                startY: 20
+            });
+        } else {
+            doc.text('EPF table data not available', 20, 20);
+        }
+
+        // Save the PDF
+        doc.save(`${name}_EPF_Summary.pdf`);
+    } catch (error) {
+        console.error('PDF generation failed:', error);
+        alert('Error generating PDF. Please check the console for more information.');
+    }
+}
 
 function goToNextPage() {
     const retirementAmountNeededElement = document.getElementById('retirementAmountNeeded');
