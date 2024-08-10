@@ -3,15 +3,40 @@ function formatNumber(number) {
 }
 
 function validateForm() {
+    const requiredFields = ['name', 'currentAge', 'retirementAge', 'inflationRate', 'monthlySpending'];
+    const missingFields = [];
+
+    for (const field of requiredFields) {
+        const value = document.getElementById(field).value.trim();
+        if (value === '') {
+            missingFields.push(field);
+        }
+    }
+
+    if (missingFields.length > 0) {
+        const missingFieldNames = missingFields.map(field => {
+            switch(field) {
+                case 'name': return '姓名';
+                case 'currentAge': return '当前年龄';
+                case 'retirementAge': return '退休年龄';
+                case 'inflationRate': return '通胀率';
+                case 'monthlySpending': return '每月开销';
+                default: return field;
+            }
+        });
+        alert(`请填写以下必填字段：${missingFieldNames.join(', ')}`);
+        return false;
+    }
+
     const currentAge = parseInt(document.getElementById('currentAge').value);
     const retirementAge = parseInt(document.getElementById('retirementAge').value);
     if (retirementAge <= currentAge) {
         alert('退休年龄必须大于当前年龄');
         return false;
     }
+
     calculateYearsNeeded();
     calculateSpending();
-    updateGoalProgress();
     return true;
 }
 
@@ -37,6 +62,21 @@ function calculateSpending() {
     setFormattedValue('yearlySpendingR', yearlySpendingR);
     setFormattedValue('retirementAmountNeeded', retirementAmountNeeded);
     setFormattedValue('retirementAmountNeededR', retirementAmountNeededR);
+
+    // Show the results container
+    document.getElementById('resultsContainer').style.display = 'block';
+
+    // Round down the retirement amount
+    const roundedRetirementAmount = Math.floor(retirementAmountNeededR);
+
+    // Update the values in the welcome message and dashboard
+    document.getElementById('userName').textContent = document.getElementById('name').value;
+    document.getElementById('retirementGoal2').textContent = `RM${formatNumber(roundedRetirementAmount)}`;
+    
+    // Update the financial dashboard // having issueeeeeeee yaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+    document.getElementById('retirementGoal').textContent = formatDashboardNumber(roundedRetirementAmount);
+    document.getElementById('yearsNeeded2').textContent = yearsNeeded;
+    document.getElementById('inflationRate2').textContent = `${(inflationRate * 100).toFixed(2)}%`;
 }
 
 function setFormattedValue(elementId, value) {
@@ -46,21 +86,6 @@ function setFormattedValue(elementId, value) {
     }
 }
 
-function updateGoalProgress() {
-    const retirementAmountNeeded = parseFloat(document.getElementById('retirementAmountNeededR').value.replace(/,/g, ''));
-    const currentSavings = 0; // You may want to add an input field for this
-
-    const progressPercentage = (currentSavings / retirementAmountNeeded) * 100;
-    const formattedPercentage = Math.min(progressPercentage, 100).toFixed(2);
-
-    document.getElementById('goalProgress').style.display = 'block';
-    document.getElementById('goalAmount').textContent = `退休目标: RM${formatNumber(retirementAmountNeeded)}`;
-    document.getElementById('goalProgressPercentage').textContent = `目标完成度: ${formattedPercentage}%`;
-    
-    const progressFill = document.getElementById('progressFill');
-    progressFill.style.width = `${formattedPercentage}%`;
-    progressFill.style.backgroundColor = progressPercentage >= 100 ? '#4CAF50' : '#FFA500';
-}
 
 // Format the monthly spending display as the user types
 document.getElementById('monthlySpending').addEventListener('input', function(e) {
@@ -87,6 +112,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+function formatDashboardNumber(number) {
+    if (number >= 1000000) {
+        return '$' + (number / 1000000).toFixed(1) + 'M';
+    } else if (number >= 1000) {
+        return '$' + (number / 1000).toFixed(1) + 'K';
+    } else {
+        return '$' + number.toFixed(2);
+    }
+}
+
 function goToNextPage() {
     // Get all the input values
     const name = document.getElementById('name').value;
@@ -102,4 +137,13 @@ function goToNextPage() {
 
     // Navigate to the EPF calculator page
     window.location.href = url;
+}
+
+function updateElement(id, value) {
+    const element = document.getElementById(id);
+    if (element) {
+        element.textContent = value;
+    } else {
+        console.error(`Element with id '${id}' not found`);
+    }
 }

@@ -1,6 +1,9 @@
 let globalRetirementAmountNeeded = 0;
 let globalEpfFinalAmount = 0;
 let globalNetPassiveIncome = 0;
+let globalCurrentAge = 0;
+let globalRetirementAge = 0;
+let globalYearsNeeded = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
     loadDataFromStorage();
@@ -17,6 +20,9 @@ function formatNumber(number) {
 function loadDataFromStorage() {
     const retirementAmountNeeded = localStorage.getItem('retirementAmountNeeded');
     const epfFinalAmount = localStorage.getItem('epfFinalAmount');
+    globalCurrentAge = parseInt(localStorage.getItem('currentAge')) || 0;
+    globalRetirementAge = parseInt(localStorage.getItem('retirementAge')) || 0;
+    globalYearsNeeded = parseInt(localStorage.getItem('yearsNeeded')) || 0;
 
     if (retirementAmountNeeded && epfFinalAmount) {
         globalRetirementAmountNeeded = parseFloat(retirementAmountNeeded.replace(/,/g, ''));
@@ -32,6 +38,10 @@ function loadDataFromStorage() {
         updateLifeProgress();
     } else {
         alert('未找到所需数据。请先完成 EPF 计算。');
+        window.location.href = 'epf.html';
+    }
+    if (globalCurrentAge === 0 || globalRetirementAge === 0 || globalYearsNeeded === 0) {
+        alert('Age information not found. Please complete the EPF calculation first.');
         window.location.href = 'epf.html';
     }
 }
@@ -76,6 +86,7 @@ function calculateHouseInvestment() {
     const houseAppreciationRate = parseFloat(document.getElementById('houseAppreciationRate').value) / 100;
     const interestRate = parseFloat(document.getElementById('interestRate').value) / 100;
     const additionalPaymentPercentage = parseFloat(document.getElementById('additionalPaymentPercentage').value) / 100;
+    const yearsUntilRetirement = globalRetirementAge - globalCurrentAge;
 
     if (isNaN(housePrice) || isNaN(rentAmount) || isNaN(houseAppreciationRate) || 
         isNaN(interestRate) || isNaN(additionalPaymentPercentage)) {
@@ -85,10 +96,9 @@ function calculateHouseInvestment() {
 
     const currentAge = 30; // Example value
     const retirementAge = 60; // Example value
-    const yearsUntilRetirement = retirementAge - currentAge;
 
     const finalNetPassiveIncome = generateTable(housePrice, rentAmount, 
-        houseAppreciationRate, interestRate, currentAge, yearsUntilRetirement, additionalPaymentPercentage);
+        houseAppreciationRate, interestRate, globalCurrentAge, yearsUntilRetirement, additionalPaymentPercentage);
 
     globalNetPassiveIncome = finalNetPassiveIncome;
     updateLifeProgress();
@@ -251,9 +261,9 @@ function goToNextPage() {
     localStorage.setItem('epfFinalAmount', epfFinalAmount.toString());
     localStorage.setItem('realEstateAmount', realEstateAmount.toString());
     localStorage.setItem('monthlyEstimate', monthlyEstimate);
-    localStorage.setItem('currentAge', localStorage.getItem('currentAge'));
-    localStorage.setItem('retirementAge', localStorage.getItem('retirementAge'));
-    localStorage.setItem('yearsNeeded', localStorage.getItem('yearsNeeded'));
+    localStorage.setItem('currentAge', globalCurrentAge.toString());
+    localStorage.setItem('retirementAge', globalRetirementAge.toString());
+    localStorage.setItem('yearsNeeded', globalYearsNeeded.toString());
 
     // Navigate to the stockmarket page
     window.location.href = 'stockmarket.html';
