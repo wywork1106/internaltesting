@@ -10,11 +10,42 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('calculateButton').addEventListener('click', calculateHouseInvestment);
     document.getElementById('progressButton').addEventListener('click', toggleLifeProgress);
     document.getElementById('toggleHouseCalculatorButton').addEventListener('click', toggleHouseCalculator);
-    document.getElementById('nextButton').addEventListener('click', goToNextPage);
+    document.getElementById('nextButton').addEventListener('click', verifyAndProceed);
 });
 
 function formatNumber(number) {
     return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatShortNumber(number) {
+    if (number >= 1000000) {
+        return (number / 1000000).toFixed(1) + 'M';
+    } else if (number >= 1000) {
+        return (number / 1000).toFixed(1) + 'K';
+    } else {
+        return number.toFixed(0);
+    }
+}
+
+function verifyAndProceed() {
+    if (validateInputs()) {
+        goToNextPage();
+    } else {
+        alert('请先填写所有必填字段并计算房屋投资。');
+    }
+}
+
+function validateInputs() {
+    const housePrice = document.getElementById('housePrice').value;
+    const rentAmount = document.getElementById('rentAmount').value;
+    const houseAppreciationRate = document.getElementById('houseAppreciationRate').value;
+    const interestRate = document.getElementById('interestRate').value;
+    const additionalPaymentPercentage = document.getElementById('additionalPaymentPercentage').value;
+
+    if (housePrice && rentAmount && houseAppreciationRate && interestRate && additionalPaymentPercentage) {
+        return globalNetPassiveIncome > 0; // This ensures that calculations have been performed
+    }
+    return false;
 }
 
 function loadDataFromStorage() {
@@ -28,12 +59,8 @@ function loadDataFromStorage() {
         globalRetirementAmountNeeded = parseFloat(retirementAmountNeeded.replace(/,/g, ''));
         globalEpfFinalAmount = parseFloat(epfFinalAmount.replace(/,/g, ''));
 
-        // Update retirement amount needed (目标退休金额)
-        updateElementContent('retirementAmountNeeded', `退休需要的钱: <span class="highlight">RM ${formatNumber(globalRetirementAmountNeeded)}</span>`);
-        updateElementContent('targetRetirementAmount', `RM ${formatNumber(globalRetirementAmountNeeded)}`);
-
-        // Update EPF amount
-        updateElementContent('epfAmount', `RM ${formatNumber(globalEpfFinalAmount)}`);
+        updateElementContent('displayRetirementGoal', `RM (globalRetirementAmountNeeded)}`);
+        updateElementContent('epfAmountShort', `RM ${formatShortNumber(globalEpfFinalAmount)}`);
 
         updateLifeProgress();
     } else {
@@ -45,40 +72,6 @@ function loadDataFromStorage() {
         window.location.href = 'epf.html';
     }
 }
-
-function getUrlParameter(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    var results = regex.exec(location.search);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
-
-function loadDataFromUrl() {
-    const retirementAmountNeeded = localStorage.getItem('retirementAmountNeeded');
-    const epfFinalAmount = localStorage.getItem('epfFinalAmount');
-
-    console.log("Retirement Amount:", retirementAmountNeeded);
-    console.log("EPF Final Amount:", epfFinalAmount);
-
-    if (retirementAmountNeeded) {
-        globalRetirementAmountNeeded = parseFloat(retirementAmountNeeded.replace(/,/g, ''));
-        updateElementContent('retirementAmountNeeded', `退休需要的钱: <span class="highlight">RM ${globalRetirementAmountNeeded.toFixed(2)}</span>`);
-        updateElementContent('targetRetirementAmount', `RM ${globalRetirementAmountNeeded.toFixed(2)}`);
-    } else {
-        console.error('Retirement amount not found in localStorage');
-    }
-
-    if (epfFinalAmount) {
-        globalEpfFinalAmount = parseFloat(epfFinalAmount.replace(/,/g, ''));
-        updateElementContent('epfAmount', `RM ${globalEpfFinalAmount.toFixed(2)}`);
-    } else {
-        console.error('EPF final amount not found in localStorage');
-    }
-
-    updateLifeProgress();
-}
-
-
 
 function calculateHouseInvestment() {
     const housePrice = parseFloat(document.getElementById('housePrice').value);
@@ -94,16 +87,11 @@ function calculateHouseInvestment() {
         return false;
     }
 
-    const currentAge = 30; // Example value
-    const retirementAge = 60; // Example value
-
     const finalNetPassiveIncome = generateTable(housePrice, rentAmount, 
         houseAppreciationRate, interestRate, globalCurrentAge, yearsUntilRetirement, additionalPaymentPercentage);
 
     globalNetPassiveIncome = finalNetPassiveIncome;
     updateLifeProgress();
-
-    showElement('investmentProgress');
     showElement('houseCalculator');
 
     return true;
@@ -146,7 +134,6 @@ function generateTable(housePrice, rentAmount, houseAppreciationRate,
         row.insertCell(9).textContent = formatNumber(netPassiveIncomeYear);
         row.insertCell(10).textContent = formatNumber(houseValue);
 
-        // Update for next year
         currentHousePrice *= (1 + houseAppreciationRate);
         rentAmount *= (1 + houseAppreciationRate);
         debtToBank = yearEndDebt;
@@ -156,36 +143,27 @@ function generateTable(housePrice, rentAmount, houseAppreciationRate,
         }
     }
 
-    updateProgressInfo(finalNetPassiveIncome);
     return finalNetPassiveIncome;
-}
-function updateProgressInfo(finalNetPassiveIncome) {
-    const progressPercentage = (finalNetPassiveIncome / globalRetirementAmountNeeded) * 100;
-
-    updateElementContent('retirementAmountNeeded', `退休需要的钱: <span class="highlight">RM ${globalRetirementAmountNeeded.toFixed(2)}</span>`);
-    updateElementContent('netPassiveIncome', `净被动收入: <span class="highlight">RM ${finalNetPassiveIncome.toFixed(2)}</span>`);
-    updateElementStyle('progressFill', 'width', `${Math.min(progressPercentage, 100)}%`);
-    updateElementContent('progressPercentage', `目标完成度: <span class="highlight">${Math.min(progressPercentage, 100).toFixed(2)}%</span>`);
 }
 
 function updateLifeProgress() {
     const totalAmount = globalEpfFinalAmount + globalNetPassiveIncome;
     const progressPercentage = (totalAmount / globalRetirementAmountNeeded) * 100;
 
-    updateElementContent('realEstateAmount', `RM ${formatNumber(globalNetPassiveIncome)}`);
-    updateElementContent('totalAmount', `RM ${formatNumber(totalAmount)}`);
+    updateElementContent('epfAmountShort', `RM ${formatShortNumber(globalEpfFinalAmount)}`);
+    updateElementContent('realEstateAmount', `RM ${formatShortNumber(globalNetPassiveIncome)}`);
+    updateElementContent('displayRetirementGoal', `RM ${formatNumber(globalRetirementAmountNeeded)}`);
+    updateElementContent('displayRetirementGoal2', `RM ${formatShortNumber(globalRetirementAmountNeeded)}`);
+    updateElementContent('totalAmountShort', `RM ${formatShortNumber(totalAmount)}`);
     
     const shortfall = Math.max(0, globalRetirementAmountNeeded - totalAmount);
-    updateElementContent('shortfall', `RM ${formatNumber(shortfall)}`);
+    updateElementContent('shortfallShort', `RM ${formatShortNumber(shortfall)}`);
     
-    const monthlyEstimate = (totalAmount * 0.04) / 12; // Assuming 4% annual withdrawal rate
-    updateElementContent('monthlyEstimate', `RM ${formatNumber(monthlyEstimate)}`);
+    const monthlyEstimate = (totalAmount * 0.04) / 12;
+    updateElementContent('monthlyEstimateShort', `RM ${formatShortNumber(monthlyEstimate)}`);
 
-    // Update progress bar
-    updateElementStyle('progressFill', 'width', `${Math.min(progressPercentage, 100)}%`);
-    updateElementContent('progressPercentage', `目标完成度: <span class="highlight">${Math.min(progressPercentage, 100).toFixed(2)}%</span>`);
+    updateElementContent('completionPercentage', `${Math.min(progressPercentage, 100).toFixed(2)}`);
 
-    // Update progress segments
     const epfPercentage = (globalEpfFinalAmount / globalRetirementAmountNeeded) * 100;
     const realEstatePercentage = (globalNetPassiveIncome / globalRetirementAmountNeeded) * 100;
     
@@ -195,7 +173,7 @@ function updateLifeProgress() {
 }
 
 function toggleLifeProgress() {
-    const progressInfo = document.getElementById('lifeProgress');
+    const progressInfo = document.getElementById('progressInfo');
     if (progressInfo.style.display === 'none') {
         progressInfo.style.display = 'block';
         this.textContent = '隐藏人生进度';
@@ -209,13 +187,12 @@ function toggleHouseCalculator() {
     const calculator = document.getElementById('houseCalculator');
     const button = document.getElementById('toggleHouseCalculatorButton');
     if (calculator && button) {
-        calculator.classList.toggle('hidden');
-        if (calculator.classList.contains('hidden')) {
-            button.textContent = '显示 房贷 计算器';
-            calculator.style.display = 'none';
-        } else {
-            button.textContent = '隐藏 房贷 计算器';
+        if (calculator.style.display === 'none') {
             calculator.style.display = 'block';
+            button.textContent = '隐藏 房贷 计算器';
+        } else {
+            calculator.style.display = 'none';
+            button.textContent = '显示 房贷 计算器';
         }
     } else {
         console.error('Calculator or button element not found');
@@ -250,21 +227,17 @@ function showElement(id) {
 }
 
 function goToNextPage() {
-    // Get the required data
-    const retirementAmountNeeded = globalRetirementAmountNeeded;
-    const epfFinalAmount = globalEpfFinalAmount;
-    const realEstateAmount = globalNetPassiveIncome;
-    const monthlyEstimate = document.getElementById('monthlyEstimate').textContent.replace('RM ', '');
-
-    // Store the data in localStorage
-    localStorage.setItem('retirementAmountNeeded', retirementAmountNeeded.toString());
-    localStorage.setItem('epfFinalAmount', epfFinalAmount.toString());
-    localStorage.setItem('realEstateAmount', realEstateAmount.toString());
-    localStorage.setItem('monthlyEstimate', monthlyEstimate);
+    localStorage.setItem('retirementAmountNeeded', globalRetirementAmountNeeded.toString());
+    localStorage.setItem('epfFinalAmount', globalEpfFinalAmount.toString());
+    localStorage.setItem('realEstateAmount', globalNetPassiveIncome.toString());
+    localStorage.setItem('monthlyEstimate', document.getElementById('monthlyEstimateShort').textContent.replace('RM ', ''));
     localStorage.setItem('currentAge', globalCurrentAge.toString());
     localStorage.setItem('retirementAge', globalRetirementAge.toString());
     localStorage.setItem('yearsNeeded', globalYearsNeeded.toString());
+    localStorage.setItem('housePrice', document.getElementById('housePrice').value);
+    localStorage.setItem('rentAmount', document.getElementById('rentAmount').value);
+    localStorage.setItem('houseAppreciationRate', document.getElementById('houseAppreciationRate').value);
+    localStorage.setItem('additionalPaymentPercentage', document.getElementById('additionalPaymentPercentage').value);
 
-    // Navigate to the stockmarket page
     window.location.href = 'stockmarket.html';
 }

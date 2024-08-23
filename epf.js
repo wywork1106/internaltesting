@@ -2,6 +2,7 @@ function formatNumber(number) {
     return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
 }
 
+
 function loadURLParams() {
     const urlParams = new URLSearchParams(window.location.search);
     document.getElementById('name').value = urlParams.get('name') || '';
@@ -9,10 +10,28 @@ function loadURLParams() {
     document.getElementById('retirementAge').value = urlParams.get('retirementAge') || '';
     document.getElementById('yearsNeeded').value = urlParams.get('yearsNeeded') || '';
     document.getElementById('inflationRate').value = urlParams.get('inflationRate') || '4';
-    document.getElementById('currentSalary').value = urlParams.get('monthlySpending') || '';
-    
+    document.getElementById('monthlySpending').value = urlParams.get('monthlySpending') || '';
+    document.getElementById('currentSalary').value = urlParams.get('currentSalary') || '';
+
+
     const retirementAmount = urlParams.get('retirementAmountNeeded') || '0';
+
     document.getElementById('retirementAmountNeeded').value = retirementAmount;
+
+    let retirementGoal = document.getElementById('displayRetirementGoal').textContent;
+    if (!retirementGoal) {
+        retirementGoal = urlParams.get('retirementAmountNeeded') || '0'; // Default to 0 if not provided
+    }
+    
+    retirementGoal = parseFloat(retirementGoal.replace(/[^\d.-]/g, '')); // Remove any non-numeric characters
+    
+    if (isNaN(retirementGoal)) {
+        retirementGoal = 0; // Fallback to 0 if parsing fails
+    }
+    
+    const formattedRetirementGoal = formatFullNumber(retirementGoal);
+    document.getElementById('displayRetirementGoal').textContent = 'RM ' + formattedRetirementGoal;
+   
 }
 
 window.onload = function() {
@@ -94,42 +113,10 @@ function calculateEPF() {
     const retirementNeeded = parseFloat(document.getElementById('retirementAmountNeeded').value.replace(/,/g, ''));
     const tableRows = document.getElementById('epfTable').rows;
     const finalAmount = parseFloat(tableRows[tableRows.length - 1].cells[6].innerHTML.replace(/,/g, ''));
-    const goalProgressPercentage = (finalAmount / retirementNeeded) * 100;
-
-    let achievedYear = -1;
-    let exceededAmount = 0;
-
-    for (let i = 1; i < tableRows.length; i++) {
-        const currentAmount = parseFloat(tableRows[i].cells[6].innerHTML.replace(/,/g, ''));
-        if (currentAmount >= retirementNeeded && achievedYear === -1) {
-            achievedYear = parseInt(tableRows[i].cells[0].innerHTML);
-            exceededAmount = currentAmount - retirementNeeded;
-            break;
-        }
-    }
-
-    document.getElementById('goalAmount').innerHTML = `退休目标: <span class="highlight">RM${formatNumber(retirementNeeded)}</span>`;
-    document.getElementById('goalProgressPercentage').innerHTML = `目标完成度: <span class="highlight">${Math.min(goalProgressPercentage, 100).toFixed(2)}%</span>`;
-    
-    const progressFill = document.getElementById('progressFill');
-    progressFill.style.width = `${Math.min(goalProgressPercentage, 100)}%`;
-    progressFill.style.backgroundColor = goalProgressPercentage >= 100 ? '#4CAF50' : '#FFA500';
 
     updateProgressInfo(finalAmount, retirementNeeded);
 
-    if (achievedYear !== -1) {
-        document.getElementById('achievedYear').innerHTML = `在第 ${achievedYear} 年达到退休目标`;
-        const lastYear = yearsNeeded;
-        const exceededPercentage = (exceededAmount / retirementNeeded) * 100;
-        document.getElementById('exceededAmount').innerHTML = `<span class="highlight">在最后一年 ${lastYear} 超出金额: RM ${formatNumber(exceededAmount)} (${exceededPercentage.toFixed(2)}%)</span>`;
-    } else {
-        document.getElementById('achievedYear').innerHTML = '<span class="emphasis">未能在计划年限内达到退休目标</span>';
-        const shortfall = retirementNeeded - finalAmount;
-        const shortfallPercentage = (shortfall / retirementNeeded) * 100;
-        document.getElementById('exceededAmount').innerHTML = `<span class="highlight">在最后一年 ${yearsNeeded} 差额: RM ${formatNumber(shortfall)} (${shortfallPercentage.toFixed(2)}%)</span>`;
-    }
-
-    document.getElementById('goalProgress').style.display = 'block';
+    document.getElementById('progressInfo').style.display = 'block';
     document.getElementById('epfCalculator').style.display = 'block';
 
     return true;
@@ -139,19 +126,21 @@ function updateProgressInfo(currentAmount, targetAmount) {
     const epfPercentage = (currentAmount / targetAmount) * 100;
     const totalPercentage = Math.min(epfPercentage, 100);
 
-    document.getElementById('targetRetirementAmount').textContent = `RM ${formatNumber(targetAmount)}`;
-    document.getElementById('epfAmount').textContent = `RM ${formatNumber(currentAmount)} (${epfPercentage.toFixed(2)}%)`;
-    document.getElementById('totalAmount').textContent = `RM ${formatNumber(currentAmount)} (${totalPercentage.toFixed(2)}%)`;
+    updateKPIValue('targetRetirementAmountShort', targetAmount);
+    updateKPIValue('epfAmountShort', currentAmount);
+    updateKPIValue('totalAmountShort', currentAmount);
     
-    const shortfall = targetAmount - currentAmount;
-    const shortfallPercentage = (shortfall / targetAmount) * 100;
-    document.getElementById('shortfall').textContent = `RM ${formatNumber(shortfall)} (${shortfallPercentage.toFixed(2)}%)`;
+    const shortfall = Math.max(0, targetAmount - currentAmount);
+    updateKPIValue('shortfallShort', shortfall);
 
     const monthlyEstimate = (currentAmount * 0.04) / 12;
-    document.getElementById('monthlyEstimate').textContent = `RM ${formatNumber(monthlyEstimate)}`;
+    updateKPIValue('monthlyEstimateShort', monthlyEstimate);
 
     document.querySelector('.progress-segment.epf').style.width = `${epfPercentage}%`;
     document.querySelector('.progress-segment.remaining').style.width = `${100 - epfPercentage}%`;
+
+    // Update the completion percentage
+    document.getElementById('completionPercentage').textContent = epfPercentage.toFixed(1);
 }
 
 function generateTable(currentSalary, inflationRate, currentEpf, epfRate, salaryIncreaseRate) {
@@ -182,11 +171,12 @@ function generateTable(currentSalary, inflationRate, currentEpf, epfRate, salary
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const calculateButton = document.getElementById('calculateButton');
     const progressButton = document.getElementById('progressButton');
     const toggleEpfButton = document.getElementById('toggleEpfButton');
-    const nextButton = document.getElementById('nextButton');
-    const exportPdfButton = document.getElementById('exportPdfButton');
+    const progressInfo = document.getElementById('progressInfo');
+    const epfCalculator = document.getElementById('epfCalculator');
+
+
     if (exportPdfButton) {
         exportPdfButton.addEventListener('click', exportToPDF);
     }
@@ -199,24 +189,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 
-    if (calculateButton) {
-        calculateButton.addEventListener('click', function() {
-            if (validateForm()) {
-                calculateEPF();
-            }
-        });
-    }
-
     if (progressButton) {
         progressButton.addEventListener('click', function() {
             const progressInfo = document.getElementById('progressInfo');
             if (progressInfo) {
                 if (progressInfo.style.display === 'none') {
                     progressInfo.style.display = 'block';
-                    this.textContent = '隐藏人生进度';
+                    this.textContent = '隐藏目标进度';
                 } else {
                     progressInfo.style.display = 'none';
-                    this.textContent = '人生进度';
+                    this.textContent = '目标进度';
                 }
             }
         });
@@ -233,6 +215,14 @@ document.addEventListener('DOMContentLoaded', function() {
                     calculator.style.display = 'none';
                     this.textContent = '显示 EPF 计算器';
                 }
+            }
+        });
+    }
+
+    if (calculateButton) {
+        calculateButton.addEventListener('click', function() {
+            if (validateForm()) {
+                calculateEPF();
             }
         });
     }
@@ -317,7 +307,39 @@ function goToNextPage() {
         localStorage.setItem('currentAge', document.getElementById('currentAge').value);
         localStorage.setItem('retirementAge', document.getElementById('retirementAge').value);
         localStorage.setItem('yearsNeeded', document.getElementById('yearsNeeded').value);
-    
+        // Add these lines where you calculate EPF
+        localStorage.setItem('currentSalary', document.getElementById('currentSalary').value);
+        localStorage.setItem('epfRate', document.getElementById('epfRate').value);
+        localStorage.setItem('salaryIncreaseRate', document.getElementById('salaryIncreaseRate').value);
         window.location.href = 'house.html';
     }
 }
+
+function formatNumberWithCommas(number) {
+    return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function formatShortNumber(number) {
+    const units = ['', 'K', 'M', 'B'];
+    let unitIndex = 0;
+    let scaledNumber = number;
+
+    while (scaledNumber >= 1000 && unitIndex < units.length - 1) {
+        scaledNumber /= 1000;
+        unitIndex++;
+    }
+
+    return scaledNumber.toFixed(1) + units[unitIndex];
+}
+
+function formatFullNumber(number) {
+    return number.toFixed(0).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function updateKPIValue(elementId, value) {
+    const element = document.getElementById(elementId);
+    const shortValue = formatShortNumber(value);
+    element.textContent = shortValue;
+    element.title = `完整数值：${value.toLocaleString()}`;
+}
+

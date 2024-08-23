@@ -12,98 +12,95 @@
 
         <div class="frame">
             <div class="input-group">
-                <label for="currentAge">当前年龄: (自动填充)</label>
-                <input type="number" id="currentAge" required readonly>
+                <input type="hidden" id="currentAge" required readonly>
             </div>
             
             <div class="input-group">
-                <label for="retirementAge">退休年龄: (自动填充)</label>
-                <input type="number" id="retirementAge" required readonly>
+                <input type="hidden" id="retirementAge" required readonly>
             </div>
             
             <div class="input-group">
-                <label for="yearsNeeded">所需年份: (自动填充)</label>
-                <input type="number" id="yearsNeeded" required readonly>
+                <input type="hidden" id="yearsNeeded" required readonly>
             </div>
 
             <div class="input-group">
                 <label for="monthlyInvestment">每个月愿意投资多少？ <span class="required">*</span></label>
-                <input type="number" id="monthlyInvestment" required>
+                <input type="number" id="monthlyInvestment" required placeholder="例如: 100">
             </div>
 
             <div class="input-group">
                 <label for="growthRate">增涨率 (%): <span class="required">*</span></label>
-                <input type="number" id="growthRate" step="0.1" required>
+                <input type="number" id="growthRate" step="0.1" required placeholder="例如: 2.5">
             </div>
 
             <div class="input-group">
                 <label for="dividendRate">股息率 (%): <span class="required">*</span></label>
-                <input type="number" id="dividendRate" step="0.1" required>
+                <input type="number" id="dividendRate" step="0.1" required placeholder="例如: 2.5">
             </div>
 
             <div class="input-group">
                 <label for="currentStockValue">现有股票金额: <span class="required">*</span></label>
-                <input type="number" id="currentStockValue" required>
+                <input type="number" id="currentStockValue" required placeholder="当前存有的股票总金额,例如: 3000">
             </div>
 
             <div class="button-group">
                 <button id="calculateButton">计算</button>
                 <button id="progressButton">人生进度</button>
                 <button id="toggleStockCalculatorButton">显示 股票 计算器</button>
-                <button id="nextButton">总结</button>
+                <button id="nextButton" onclick="goToNextPage()">总结</button>
             </div>
         </div>
 
-        <div id="investmentProgress" class="frame" style="display:none;">
-            <h2>投资概况</h2>
-            <div id="progressBar">
-                <div id="progressFill"></div>
-            </div>
-            <p id="retirementAmountNeeded"></p>
-            <p id="stockValue"></p>
-            <p id="progressPercentage"></p>
-        </div>
 
-        <div id="lifeProgress" class="progress-info" style="display:none;">
-            <h2>人生进度</h2>
-            <div class="progress-bar">
-                <div class="progress-segment epf"></div>
-                <div class="progress-segment real-estate"></div>
-                <div class="progress-segment stocks"></div>
-                <div class="progress-segment remaining"></div>
-            </div>
-            <div class="progress-details">
-                <div class="progress-item">
-                    <div class="progress-item-label">目标退休金额:</div>
-                    <div class="progress-item-value" id="targetRetirementAmount"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">EPF:</div>
-                    <div class="progress-item-value" id="epfAmount"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">房地产:</div>
-                    <div class="progress-item-value" id="realEstateAmount"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">股票:</div>
-                    <div class="progress-item-value" id="stockAmount"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">总计:</div>
-                    <div class="progress-item-value" id="totalAmount"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">距离退休目标还差:</div>
-                    <div class="progress-item-value" id="shortfall"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">退休后每月预计:</div>
-                    <div class="progress-item-value" id="monthlyEstimate"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">目标完成度:</div>
-                    <div class="progress-item-value" id="progressPercentage"></div>
+        <div class="column frame">
+            <div class="progress-container">
+                <div id="progressInfo" class="progress-info" style="display: none;">
+                    <h2>退休进度概览</h2>
+                    
+                    <p>您的退休目标金额为 <span id="displayRetirementGoal" class="highlight"></span></p>
+                    <div class="financial-dashboard">
+                        <div class="kpi-list">
+                            <div class="kpi-item">
+                                <span id="epfAmount" class="kpi-value"></span>
+                                <span class="kpi-label">EPF 累积</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="realEstateAmount" class="kpi-value"></span>
+                                <span class="kpi-label">房地产 累积</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="stockAmount" class="kpi-value"></span>
+                                <span class="kpi-label">股票 累积</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="targetRetirementAmount" class="kpi-value"></span>
+                                <span class="kpi-label">退休目标</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="totalAmount" class="kpi-value"></span>
+                                <span class="kpi-label">总累积资产</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="shortfall" class="kpi-value"></span>
+                                <span class="kpi-label">距离目标差额</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="monthlyEstimate" class="kpi-value"></span>
+                                <span class="kpi-label">退休后每月估算</span>
+                            </div>
+        
+                            <div class="goal-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-segment epf" style="width: 0%;">EPF</div>
+                                    <div class="progress-segment real-estate" style="width: 0%;">房地产</div>
+                                    <div class="progress-segment stocks" style="width: 0%;">股票</div>
+                                    <div class="progress-segment remaining" style="width: 100%;"></div>
+                                </div>
+                                <p id="progressText">您已完成 <span id="completionPercentage">0</span>% 的退休储蓄目标</p>
+                                <p>请记住进步 1% ！</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

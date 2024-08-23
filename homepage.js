@@ -114,11 +114,11 @@ document.addEventListener('DOMContentLoaded', function() {
 
 function formatDashboardNumber(number) {
     if (number >= 1000000) {
-        return '$' + (number / 1000000).toFixed(1) + 'M';
+        return (number / 1000000).toFixed(1) + 'M';
     } else if (number >= 1000) {
-        return '$' + (number / 1000).toFixed(1) + 'K';
+        return (number / 1000).toFixed(2) + ' K';
     } else {
-        return '$' + number.toFixed(2);
+        return number.toFixed(2);
     }
 }
 
@@ -131,6 +131,9 @@ function goToNextPage() {
     const inflationRate = document.getElementById('inflationRate').value;
     const monthlySpending = document.getElementById('monthlySpending').value;
     const retirementAmountNeeded = document.getElementById('retirementAmountNeededR').value;
+
+    // Add this to the existing code that handles form submission
+localStorage.setItem('monthlySpending', document.getElementById('monthlySpending').value);
 
     // Create a URL with query parameters
     const url = `epf.html?name=${encodeURIComponent(name)}&currentAge=${currentAge}&retirementAge=${retirementAge}&yearsNeeded=${yearsNeeded}&inflationRate=${inflationRate}&monthlySpending=${monthlySpending}&retirementAmountNeeded=${encodeURIComponent(retirementAmountNeeded)}`;

@@ -40,6 +40,10 @@
                 <input type="hidden" id="currentAge" required>
             </div>
 
+            <div class="input-group">
+                <input type="hidden" id="monthlySpending" required>
+            </div>
+
             <!--until here-->
 
 
@@ -81,7 +85,7 @@
                 </div>
             </div>
             <div class="button-group">
-                <button type="button" id="progressButton">人生进度</button>
+                <button type="button" id="progressButton">目标进度</button>
                 <button type="button" id="toggleEpfButton">显示 EPF 计算器</button>
                 <button id="exportPdfButton" type="button">导出 PDF</button>
                 <button type="button" id="nextButton">下一个</button>
@@ -92,61 +96,52 @@
 
     
             <input type="hidden" id="retirementAmountNeeded">
+            <div class="column frame">
+            <div class="progress-container">
+                
+                
+                <div id="progressInfo" class="progress-info" style="display: none;">
+                    <h2>退休进度概览</h2>
+                    
+                    <p>您的退休目标金额为 <span id = "displayRetirementGoal" class="highlight"></span></p>
 
-        
+                    <div class="financial-dashboard">
+                      <div class="kpi-list">
+                        <div class="kpi-item">
+                          <span id="epfAmountShort" class="kpi-value"></span>
+                          <span class="kpi-label">EPF 累积</span>
+                        </div>
+                        <div class="kpi-item">
+                          <span id="targetRetirementAmountShort" class="kpi-value"></span>
+                          <span class="kpi-label">退休目标</span>
+                        </div>
+                        <div class="kpi-item">
+                          <span id="totalAmountShort" class="kpi-value"></span>
+                          <span class="kpi-label">总累积资产</span>
+                        </div>
+                        <div class="kpi-item">
+                          <span id="shortfallShort" class="kpi-value"></span>
+                          <span class="kpi-label">距离目标差额</span>
+                        </div>
+                        <div class="kpi-item">
+                          <span id="monthlyEstimateShort" class="kpi-value"></span>
+                          <span class="kpi-label">退休后每月估算</span>
+                        </div>
     
-        <div id="goalProgress" class="column frame" style="display:none;">
-
-            <h2>退休需要的钱</h2>
-            <div id="progressBar">
-                <div id="progressFill"></div>
-            </div>
-            <div id="goalAmount"></div>
-            <div id="goalProgressPercentage"></div>
-            <div id="achievedYear"></div>
-            <div id="exceededAmount"></div>
-        </div>
-
-        <div id="progressInfo" class="progress-info" style="display: none;">
-            <div class="progress-bar">
-                <div class="progress-segment epf" style="width: 0%;">EPF</div>
-                <div class="progress-segment real-estate" style="width: 0%;"></div>
-                <div class="progress-segment stocks" style="width: 0%;"></div>
-                <div class="progress-segment remaining" style="width: 100%;">还需</div>
-            </div>
-    
-            <div class="progress-details">
-                <div class="progress-item">
-                    <h3>1. EPF</h3>
-                    <div id="epfAmount" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <h3>2. 房地产</h3>
-                    <div class="progress-item-value">?</div>
-                </div>
-                <div class="progress-item">
-                    <h3>3. 股票</h3>
-                    <div class="progress-item-value">?</div>
-                </div>
-                <div class="progress-item">
-                    <h3>目标退休金额</h3>
-                    <div id="targetRetirementAmount" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <h3>总计</h3>
-                    <div id="totalAmount" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <h3>距离退休目标还差</h3>
-                    <div id="shortfall" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <h3>退休后每月预计</h3>
-                    <div id="monthlyEstimate" class="progress-item-value"></div>
-                </div>
-            </div>
-        </div>
-    
+                          <div class="goal-progress">
+                            <div class="progress-bar">
+                                <div class="progress-segment epf" style="width: 0%;">EPF</div>
+                                <div class="progress-segment real-estate" style="width: 0%;"></div>
+                                <div class="progress-segment stocks" style="width: 0%;"></div>
+                                <div class="progress-segment remaining" style="width: 100%;">剩余</div>
+                              </div>
+                              <p>您已完成 <span id="completionPercentage">0</span>% 的退休储蓄目标</p>
+                            <p>请记住进步 1% ！ </p>
+                          </div>
+                      </div>
+                    </div>
+                  </div>
+                  
         <div id="epfCalculator" class="frame" style="display:none;">
             <div class="table-container">
                 <table id="epfTable">

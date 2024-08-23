@@ -17,15 +17,15 @@ html, body {
 
 body {
     font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
     background-color: var(--primary-bg);
     color: var(--secondary-text);
-    background-image: url('Image/logo.png');
+    min-height: 100vh;
+    background-image: url('Image');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed;
-    display: flex;
-    flex-direction: column;
 }
 
 body::before {
@@ -155,21 +155,24 @@ tr:nth-child(even) {
     font-weight: bold;
 }
 
+
 .progress-info {
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    max-width: 100%;
+    width: 100%;
+    margin: 0 auto;
     padding: 20px;
-    margin-top: 20px;
+    box-sizing: border-box;
 }
+
+
 
 .progress-bar {
     display: flex;
-    height: 30px;
-    border-radius: 15px;
+    height: 25px;
+    border-radius: 12.5px;
     overflow: hidden;
     margin-bottom: 20px;
-    background-color: #f0f0f0;
-    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .progress-segment {
@@ -179,46 +182,230 @@ tr:nth-child(even) {
     color: white;
     font-weight: bold;
     font-size: 0.8rem;
-    transition: width 0.5s ease-in-out;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    transition: all 0.3s ease;
 }
 
-.progress-segment.epf { background-color: #4CAF50; }
-.progress-segment.real-estate { background-color: #2196F3; }
-.progress-segment.stocks { background-color: #FFC107; }
-.progress-segment.remaining { background-color: #f0f0f0; color: #333; }
+.progress-segment:hover {
+    filter: brightness(110%);
+}
+
+.progress-segment.epf { background-color: #45B7D1; }
+.progress-segment.real-estate { background-color: #FF6B6B; }
+.progress-segment.stocks { background-color: #4ECDC4; }
+.progress-segment.remaining { background-color: #DDDDDD; color: #333; }
 
 .progress-details {
-    display: flex;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 15px;
 }
 
 .progress-item {
-    flex-basis: 48%;
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
     background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.progress-item-label {
-    font-weight: bold;
+.progress-item h3 {
+    font-size: 0.9rem;
     margin-bottom: 5px;
-}
-
-.progress-item-value {
-    font-size: 1.2em;
     color: var(--primary-text);
 }
 
-.real-estate { background-color: #FF6B6B; }
-.stocks { background-color: #4ECDC4; }
-.epf { background-color: #45B7D1; }
-.remaining { background-color: #DDDDDD; color: #333; }
-
-.progress-details p {
-    margin: 10px 0;
+.progress-item-value {
+    font-size: 1.1rem;
+    font-weight: bold;
+    color: var(--secondary-text);
 }
+
+@media (max-width: 768px) {
+    .button-group button {
+        flex: 1 0 100%;
+    }
+}
+
+.progress-container {
+    margin-top: 20px;
+  }
+
+  .toggle-button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: var(--accent-color);
+    color: var(--primary-bg);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+  }
+  .progress-info {
+    background-color: var(--container-bg);
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 10px;
+  }
+  
+  .progress-info h2 {
+    font-size: 1.2rem;
+    margin-bottom: 15px;
+  }
+  .progress-bar {
+    display: flex;
+    height: 25px;
+    border-radius: 12.5px;
+    overflow: hidden;
+    margin-bottom: 20px;
+  }
+  
+  .progress-segment {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+  }
+  
+  .progress-segment.epf { background-color: #45B7D1; }
+  .progress-segment.real-estate { background-color: #FF6B6B; }
+  .progress-segment.stocks { background-color: #4ECDC4; }
+  .progress-segment.remaining { background-color: #DDDDDD; color: #333; }
+  
+  .progress-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+  }
+  
+  .progress-item {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+  }
+  
+  .progress-item h3 {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: var(--primary-text);
+  }
+  
+  .progress-item-value {
+    font-size: 1rem;
+    font-weight: bold;
+    color: var(--secondary-text);
+  }
+  
+  @media (max-width: 600px) {
+    .progress-details {
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    }
+    
+    .progress-item h3 {
+      font-size: 0.8rem;
+    }
+    
+    .progress-item-value {
+      font-size: 0.9rem;
+    }
+  }
+  
+
+  .financial-dashboard {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 20px;
+  }
+  
+  .kpi-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+  }
+  
+  .kpi-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.05);
+    border-radius: 8px;
+    padding: 10px;
+  }
+  
+  .kpi-value {
+    font-size: 1.2em;
+    font-weight: bold;
+    color: var(--accent-color);
+    cursor: help;
+  }
+  
+  .kpi-label {
+    font-size: 0.9em;
+    color: var(--secondary-text);
+    margin-top: 5px;
+  }
+  
+  @media (max-width: 600px) {
+    .kpi-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  .dashboard-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #1c2841;
+    color: #ffffff;
+    border-radius: 10px;
+  }
+  
+  .welcome-message {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .highlight {
+    color: #ffd700;
+    font-weight: bold;
+  }
+
+    
+  .goal-progress {
+    text-align: center;
+  }
+  
+  .progress-bar {
+    background-color: rgba(255, 255, 255, 0.1);
+    height: 20px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin: 10px 0;
+  }
+  
+  .progress {
+    background-color: #4caf50;
+    height: 100%;
+    width: 25%;
+  }
+  
+  @media (max-width: 480px) {
+    .kpi-item {
+      flex-direction: column;
+      text-align: center;
+    }
+  
+    .kpi-item i {
+      margin-right: 0;
+      margin-bottom: 5px;
+    }
+  }
 
 #stockCalculator {
     transition: max-height 0.3s ease-out, opacity 0.3s ease-out;

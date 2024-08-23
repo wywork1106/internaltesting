@@ -13,27 +13,31 @@
         <div class="frame">
             <div class="input-group">
                 <label for="housePrice">屋子价格:</label>
-                <input type="number" id="housePrice" placeholder="例如: 500000">
+                <input type="number" id="housePrice" placeholder="例如: 500000" required>
             </div>
 
             <div class="input-group">
                 <label for="rentAmount">房租 (每月):</label>
-                <input type="number" id="rentAmount" placeholder="例如: 1000">
+                <input type="number" id="rentAmount" placeholder="例如: 1000" required>
             </div>
 
             <div class="input-group">
                 <label for="houseAppreciationRate">屋子增长率 (%):</label>
-                <input type="number" id="houseAppreciationRate" placeholder="例如: 3">
+                <input type="number" id="houseAppreciationRate" placeholder="例如: 3" required>
             </div>
 
             <div class="input-group">
                 <label for="interestRate">利息 (%):</label>
-                <input type="number" id="interestRate" placeholder="例如: 4.5">
+                <input type="number" id="interestRate" placeholder="例如: 4.5" required>
             </div>
 
             <div class="input-group">
                 <label for="additionalPaymentPercentage">愿意多还多少%:</label>
-                <input type="number" id="additionalPaymentPercentage" placeholder="例如: 10">
+                <input type="number" id="additionalPaymentPercentage" placeholder="例如: 10" required>
+            </div>
+
+            <div class="input-group">
+                <input type="hidden" id="retirementAmountNeeded" required>
             </div>
 
             <div class="button-group">
@@ -44,53 +48,50 @@
             </div>
         </div>
 
-        <div id="investmentProgress" class="frame" style="display:none;">
-            <h2>投资概况</h2>
-            <div id="progressBar">
-                <div id="progressFill"></div>
-            </div>
-        </div>
-
-        <div id="lifeProgress" class="progress-info" style="display:none;">
-            <h2>人生进度</h2>
-            <div class="progress-bar">
-                <div class="progress-segment epf"></div>
-                <div class="progress-segment real-estate"></div>
-                <div class="progress-segment stocks"></div>
-                <div class="progress-segment remaining"></div>
-            </div>
-            <div class="progress-details">
-                <div class="progress-item">
-                    <div class="progress-item-label">1. EPF:</div>
-                    <div id="epfAmount" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">2. 房地产:</div>
-                    <div id="realEstateAmount" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">3. 股票:</div>
-                    <div id="stockAmount" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">目标退休金额:</div>
-                    <div id="targetRetirementAmount" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">总计:</div>
-                    <div id="totalAmount" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">距离退休目标还差:</div>
-                    <div id="shortfall" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">退休后每月预计:</div>
-                    <div id="monthlyEstimate" class="progress-item-value"></div>
-                </div>
-                <div class="progress-item">
-                    <div class="progress-item-label">目标完成度:</div>
-                    <div id="progressPercentage" class="progress-item-value"></div>
+        <div class="column frame">
+            <div class="progress-container">
+                <div id="progressInfo" class="progress-info" style="display: none;">
+                    <h2>退休进度概览</h2>
+                    
+                    <p>您的退休目标金额为 <span id="displayRetirementGoal" class="highlight"></span></p>
+                    <div class="financial-dashboard">
+                        <div class="kpi-list">
+                            <div class="kpi-item">
+                                <span id="epfAmountShort" class="kpi-value"></span>
+                                <span class="kpi-label">EPF 累积</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="realEstateAmount" class="kpi-value"></span>
+                                <span class="kpi-label">屋价 累积</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="displayRetirementGoal2" class="kpi-value"></span>
+                                <span class="kpi-label">退休目标</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="totalAmountShort" class="kpi-value"></span>
+                                <span class="kpi-label">总累积资产</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="shortfallShort" class="kpi-value"></span>
+                                <span class="kpi-label">距离目标差额</span>
+                            </div>
+                            <div class="kpi-item">
+                                <span id="monthlyEstimateShort" class="kpi-value"></span>
+                                <span class="kpi-label">退休后每月估算</span>
+                            </div>
+        
+                            <div class="goal-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-segment epf" style="width: 0%;">EPF</div>
+                                    <div class="progress-segment real-estate" style="width: 0%;">房地产</div>
+                                    <div class="progress-segment remaining" style="width: 100%;">剩余</div>
+                                </div>
+                                <p>您已完成 <span id="completionPercentage">0</span>% 的退休储蓄目标</p>
+                                <p>请记住进步 1% ！</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
