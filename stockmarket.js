@@ -11,7 +11,16 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('progressButton').addEventListener('click', toggleLifeProgress);
     document.getElementById('toggleStockCalculatorButton').addEventListener('click', toggleStockCalculator);
     document.getElementById('nextButton').addEventListener('click', goToNextPage);
+
+    
+    const toggleButton = document.getElementById('toggleStockCalculatorButton');
+    if (toggleButton) {
+        toggleButton.addEventListener('click', toggleStockCalculator);
+    } else {
+        console.error('Toggle button not found');
+    }
 });
+
 
 function formatNumber(number) {
     return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
@@ -58,13 +67,6 @@ function loadDataFromStorage() {
         updateElementContent('epfAmount', `RM ${globalEpfFinalAmount.toFixed(2)}`);
         updateElementContent('realEstateAmount', `RM ${globalRealEstateAmount.toFixed(2)}`);
         updateElementContent('monthlyEstimate', `RM ${parseFloat(monthlyEstimate).toFixed(2)}`);
-
-        console.log('Loaded values:', {
-            retirementAmountNeeded: globalRetirementAmountNeeded,
-            epfFinalAmount: globalEpfFinalAmount,
-            realEstateAmount: globalRealEstateAmount
-        });
-
         updateLifeProgress();
         
     } else {
@@ -83,15 +85,6 @@ function calculateStockInvestment() {
     const dividendRate = parseFloat(document.getElementById('dividendRate').value) / 100;
     const currentStockValue = parseFloat(document.getElementById('currentStockValue').value);
 
-    console.log("Input values:", {
-        currentAge,
-        retirementAge,
-        monthlyInvestment,
-        growthRate,
-        dividendRate,
-        currentStockValue
-    });
-
     if (isNaN(currentAge) || isNaN(retirementAge) || isNaN(monthlyInvestment) || isNaN(growthRate) || isNaN(dividendRate) || isNaN(currentStockValue)) {
         alert('请输入有效的数值。');
         return false;
@@ -100,11 +93,7 @@ function calculateStockInvestment() {
     const yearsUntilRetirement = retirementAge - currentAge;
 
     globalStockAmount = generateTable(currentAge, yearsUntilRetirement, monthlyInvestment, growthRate, dividendRate, currentStockValue);
-    console.log("After generateTable - globalStockAmount:", globalStockAmount);
-
-    console.log("Before updateProgressInfo - globalStockAmount:", globalStockAmount);
     updateProgressInfo();
-    console.log("After updateProgressInfo - globalStockAmount:", globalStockAmount);
 
     return true;
 }
@@ -141,7 +130,6 @@ function generateTable(currentAge, yearsUntilRetirement, monthlyInvestment, grow
     }
 
     updateProgressInfo(stockValue);
-    console.log("generateTable returning stockValue:", stockValue);
     return stockValue;
 }
 
@@ -149,7 +137,6 @@ function updateProgressInfo() {
     // Ensure we're using the most up-to-date stock amount
     const totalAmount = globalEpfFinalAmount + globalRealEstateAmount + globalStockAmount;
     const progressPercentage = (totalAmount / globalRetirementAmountNeeded) * 100;
-    console.log(globalStockAmount,globalEpfFinalAmount);
     // Update KPI values
     updateElementContent('displayRetirementGoal', `RM ${formatNumber(globalRetirementAmountNeeded)}`);
     updateElementContent('epfAmount', `RM ${formatShortNumber(globalEpfFinalAmount)}`);
@@ -174,7 +161,6 @@ function updateProgressInfo() {
     const epfPercentage = (globalEpfFinalAmount / globalRetirementAmountNeeded) * 100;
     const realEstatePercentage = (globalRealEstateAmount / globalRetirementAmountNeeded) * 100;
     const stockPercentage = (globalStockAmount / globalRetirementAmountNeeded) * 100;
-    console.log(stockPercentage,globalStockAmount)
     updateElementStyle('.progress-segment.epf', 'width', `${epfPercentage}%`);
     updateElementStyle('.progress-segment.real-estate', 'width', `${realEstatePercentage}%`);
     updateElementStyle('.progress-segment.stocks', 'width', `${stockPercentage}%`);
@@ -237,12 +223,14 @@ function toggleLifeProgress() {
 function toggleStockCalculator() {
     const calculator = document.getElementById('stockCalculator');
     const button = document.getElementById('toggleStockCalculatorButton');
+    
     if (calculator && button) {
-        calculator.classList.toggle('hidden');
-        if (calculator.classList.contains('hidden')) {
-            button.textContent = '显示 股票 计算器';
-        } else {
+        if (calculator.style.display === 'none' || calculator.style.display === '') {
+            calculator.style.display = 'block';
             button.textContent = '隐藏 股票 计算器';
+        } else {
+            calculator.style.display = 'none';
+            button.textContent = '显示 股票 计算器';
         }
     } else {
         console.error('Calculator or button element not found');
@@ -278,7 +266,7 @@ function showElement(id) {
 
 function goToNextPage() {
     // Save the current stock investment data to localStorage
-    localStorage.setItem('stockFinalAmount', globalStockFinalAmount.toString());
+    localStorage.setItem('stockFinalAmount', globalStockAmount.toString());
 
     // Save other relevant data if not already saved
     localStorage.setItem('retirementAmountNeeded', globalRetirementAmountNeeded.toString());
@@ -286,9 +274,9 @@ function goToNextPage() {
     localStorage.setItem('realEstateAmount', globalRealEstateAmount.toString());
     
     // Add these lines where you calculate stock investment
-localStorage.setItem('monthlyStockInvestment', document.getElementById('monthlyInvestment').value);
-localStorage.setItem('dividendRate', document.getElementById('dividendRate').value);
-localStorage.setItem('growthRate', document.getElementById('growthRate').value);
+    localStorage.setItem('monthlyStockInvestment', document.getElementById('monthlyInvestment').value);
+    localStorage.setItem('dividendRate', document.getElementById('dividendRate').value);
+    localStorage.setItem('growthRate', document.getElementById('growthRate').value);
 
     // Navigate to the conclusion page
     window.location.href = 'conclusion.html';
