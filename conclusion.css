@@ -54,7 +54,7 @@ h1, h2, h3 {
     }
 }
 
-@media (max-width: 390px) { /* iPhone 14 width */
+@media (max-width: 300px) { /* iPhone 14 width */
     .chart-container {
         height: 200px;
     }
