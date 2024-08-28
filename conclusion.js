@@ -115,8 +115,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 maintainAspectRatio: false,
                 layout: {
                     padding: {
-                        top: 30,
-                        bottom: 10
+                        top: 80,
+                        bottom: 80
                     }
                 },
                 plugins: {
