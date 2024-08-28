@@ -4,21 +4,21 @@ document.addEventListener('DOMContentLoaded', function() {
     createDistributionChart();
     createGrowthChart();
 
-    const simulateAgainButton = document.getElementById('simulateAgainButton');
-    const saveScreenshotButton = document.getElementById('saveScreenshotButton');
-  
-    simulateAgainButton.addEventListener('click', function() {
-      window.location.href = 'welcome.html';
-    });
+        const simulateAgainButton = document.getElementById('simulateAgainButton');
+        const saveScreenshotButton = document.getElementById('saveScreenshotButton');
+      
+        simulateAgainButton.addEventListener('click', function() {
+          window.location.href = 'welcome.html';
+        });
   
     saveScreenshotButton.addEventListener('click', function() {
-      html2canvas(document.body).then(function(canvas) {
-        const link = document.createElement('a');
-        link.download = '人生模拟结果.png';
-        link.href = canvas.toDataURL();
-        link.click();
+        html2canvas(document.body).then(function(canvas) {
+          const link = document.createElement('a');
+          link.download = '人生模拟结果.png';
+          link.href = canvas.toDataURL();
+          link.click();
+        });
       });
-    });
 
     function getDataFromLocalStorage() {
         const keys = [
@@ -157,10 +157,12 @@ document.addEventListener('DOMContentLoaded', function() {
                                 
                                 if (percentage <= 9.9) {
                                     // Display outside for small percentages
-                                    var midAngle = element.startAngle + (element.endAngle - element.startAngle) / 2;
-                                    var x = position.x + Math.cos(midAngle) * (chart.chartArea.width / 2 * 0.55);
-                                    var y = position.y + Math.sin(midAngle) * (chart.chartArea.height / 2 * 0.55);
-                                    ctx.fillText(percentage + '%', x, y);
+                                    ctx.fillText(percentage + '%', position.x, position.y);
+
+                                    //      var midAngle = element.startAngle + (element.endAngle - element.startAngle) / 2;
+                                   // var x = position.x + Math.cos(midAngle) * (chart.chartArea.width / 2 * 0.55);
+                                  //  var y = position.y + Math.sin(midAngle) * (chart.chartArea.height / 2 * 0.55);
+                                 //   ctx.fillText(percentage + '%', x, y);
                                 } else {
                                     // Display inside for larger percentages
                                     ctx.fillText(percentage + '%', position.x, position.y);

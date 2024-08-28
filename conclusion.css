@@ -435,20 +435,6 @@ canvas {
     margin: 0;
   }
   
-  /* Responsive image styles */
-  img {
-    max-width: 100%;
-    height: auto;
-    display: block;
-  }
-  
-  /* Ensure images don't overflow their containers on small screens */
-  .card img,
-  .parameter-group img {
-    max-width: 100%;
-    height: auto;
-  }
-  
   @media (max-width: 768px) {
     .financial-parameters-grid {
       grid-template-columns: 1fr;
