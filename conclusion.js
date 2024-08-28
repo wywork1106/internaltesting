@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
                                 if (percentage <= 9.9) {
                                     // Display outside for small percentages
                                     var midAngle = element.startAngle + (element.endAngle - element.startAngle) / 2;
-                                    var x = position.x + Math.cos(midAngle) * (chart.chartArea.width / 2 * 0.5);
-                                    var y = position.y + Math.sin(midAngle) * (chart.chartArea.height / 2 * 0.5);
+                                    var x = position.x + Math.cos(midAngle) * (chart.chartArea.width / 2 * 0.6);
+                                    var y = position.y + Math.sin(midAngle) * (chart.chartArea.height / 2 * 0.7);
                                     ctx.fillText(percentage + '%', x, y);
                                 } else {
                                     // Display inside for larger percentages
