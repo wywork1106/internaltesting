@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 layout: {
                     padding: {
                         top: 30,
-                        bottom: 60
+                        bottom: 10
                     }
                 },
                 plugins: {
