@@ -6,20 +6,66 @@ var globalStockAmount = 0;
 
 document.addEventListener('DOMContentLoaded', function() {
     loadDataFromStorage();
-    updateProgressInfo();
+   
     document.getElementById('calculateButton').addEventListener('click', calculateStockInvestment);
     document.getElementById('progressButton').addEventListener('click', toggleLifeProgress);
     document.getElementById('toggleStockCalculatorButton').addEventListener('click', toggleStockCalculator);
     document.getElementById('nextButton').addEventListener('click', goToNextPage);
+    const stockcalculator = document.getElementById('stockcalculator');
 
-    
-    const toggleButton = document.getElementById('toggleStockCalculatorButton');
-    if (toggleButton) {
-        toggleButton.addEventListener('click', toggleStockCalculator);
-    } else {
-        console.error('Toggle button not found');
-    }
+    // Add event listeners to all input fields
+    const inputs = document.querySelectorAll('input[type="number"]');
+    inputs.forEach(input => {
+        input.addEventListener('input', handleInputChange);
+    });
+
+
 });
+
+function handleInputChange() {
+    if (validateInputs()) {
+        calculateStockInvestment();
+    }
+}
+
+function validateInputs() {
+    const inputs = [
+        'currentAge',
+        'retirementAge',
+        'monthlyInvestment',
+        'growthRate',
+        'dividendRate',
+        'currentStockValue'
+    ];
+
+    for (const inputId of inputs) {
+        const value = parseFloat(document.getElementById(inputId).value);
+        if (isNaN(value)) {
+            return false;
+        }
+    }
+    return true;
+}
+
+function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    let errorElement = input.nextElementSibling;
+    if (!errorElement || !errorElement.classList.contains('error')) {
+        errorElement = document.createElement('div');
+        errorElement.className = 'error';
+        input.parentNode.insertBefore(errorElement, input.nextSibling);
+    }
+    errorElement.textContent = message;
+}
+
+function clearError(inputId) {
+    const input = document.getElementById(inputId);
+    const errorElement = input.nextElementSibling;
+    if (errorElement && errorElement.classList.contains('error')) {
+        errorElement.remove();
+    }
+}
+
 
 
 function formatNumber(number) {
@@ -75,8 +121,32 @@ function loadDataFromStorage() {
 }
 
 function calculateStockInvestment() {
-
     updateProgressInfo();
+
+    const inputs = [
+        { id: 'currentAge', label: '现在年龄' },
+        { id: 'retirementAge', label: '退休年龄' },
+        { id: 'monthlyInvestment', label: '每月投资额' },
+        { id: 'growthRate', label: '增长率' },
+        { id: 'dividendRate', label: '股息率' },
+        { id: 'currentStockValue', label: '现有股票价值' }
+    ];
+
+    let hasError = false;
+
+    inputs.forEach(input => {
+        const value = parseFloat(document.getElementById(input.id).value);
+        if (isNaN(value)) {
+            showError(input.id, `请为${input.label}输入有效的数值。`);
+            hasError = true;
+        } else {
+            clearError(input.id);
+        }
+    });
+
+    if (hasError) {
+        return false;
+    }
 
     const currentAge = parseInt(document.getElementById('currentAge').value);
     const retirementAge = parseInt(document.getElementById('retirementAge').value);
@@ -84,11 +154,6 @@ function calculateStockInvestment() {
     const growthRate = parseFloat(document.getElementById('growthRate').value) / 100;
     const dividendRate = parseFloat(document.getElementById('dividendRate').value) / 100;
     const currentStockValue = parseFloat(document.getElementById('currentStockValue').value);
-
-    if (isNaN(currentAge) || isNaN(retirementAge) || isNaN(monthlyInvestment) || isNaN(growthRate) || isNaN(dividendRate) || isNaN(currentStockValue)) {
-        alert('请输入有效的数值。');
-        return false;
-    }
 
     const yearsUntilRetirement = retirementAge - currentAge;
 
@@ -225,7 +290,7 @@ function toggleStockCalculator() {
     const button = document.getElementById('toggleStockCalculatorButton');
     
     if (calculator && button) {
-        if (calculator.style.display === 'none' || calculator.style.display === '') {
+        if (calculator.style.display === 'none'|| calculator.style.display === '') {
             calculator.style.display = 'block';
             button.textContent = '隐藏 股票 计算器';
         } else {

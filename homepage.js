@@ -133,8 +133,8 @@ function goToNextPage() {
     const retirementAmountNeeded = document.getElementById('retirementAmountNeededR').value;
 
     // Add this to the existing code that handles form submission
-localStorage.setItem('monthlySpending', document.getElementById('monthlySpending').value);
-
+    localStorage.setItem('monthlySpending', document.getElementById('monthlySpending').value);
+    localStorage.setItem('name', document.getElementById('name').value);
     // Create a URL with query parameters
     const url = `epf.html?name=${encodeURIComponent(name)}&currentAge=${currentAge}&retirementAge=${retirementAge}&yearsNeeded=${yearsNeeded}&inflationRate=${inflationRate}&monthlySpending=${monthlySpending}&retirementAmountNeeded=${encodeURIComponent(retirementAmountNeeded)}`;
 

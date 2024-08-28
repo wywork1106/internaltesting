@@ -7,6 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="conclusion.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -116,16 +117,17 @@
                 </div>
             </div>
         </div>
+        
         <div class="container">
             <div class="summary-card">
                 <h2>薪资概要</h2>
                 <div class="chart-container">
-                    <canvas id="salaryChart"></canvas>
+                    <canvas id="salaryChart" style="width: 100%; height: 400px;"></canvas>
                 </div>
             </div>
     
             <div class="summary-card">
-                <h2>财务参数</h2>
+                <h1>财务参数</h1>
                 <div class="card-grid">
                     <div class="card">
                         <h3>月度支出</h3>
@@ -171,6 +173,12 @@
                         <h3>增长率</h3>
                         <p id="growthRate"></p>
                     </div>
+
+                    <div class="card">
+                        <h3>退休后每月预计</h3>
+                        <p id="monthlyEstimate2"></p>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -181,7 +189,14 @@
             <h2>总结</h2>
             <p>这个投资计划展示了如何通过时间的力量和多元化投资来实现您的退休目标。记住，投资是一个渐进的过程，需要耐心和持续的努力。通过定期投资和平衡您的投资组合，您可以逐步接近您的财务目标。</p>
         </div>
+        <div class="new-button-group">
+            <button id="simulateAgainButton" class="custom-button simulate-again">再次模拟人生</button>
+            <button id="saveScreenshotButton" class="custom-button save-screenshot">保存为图片</button>
+          </div>
+     
+        
     </div>
+
     <script src="conclusion.js"></script>
 </body>
 </html>

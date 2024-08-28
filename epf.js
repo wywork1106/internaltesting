@@ -1,7 +1,7 @@
+
 function formatNumber(number) {
     return new Intl.NumberFormat('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(number);
 }
-
 
 function loadURLParams() {
     const urlParams = new URLSearchParams(window.location.search);
@@ -13,6 +13,7 @@ function loadURLParams() {
     document.getElementById('monthlySpending').value = urlParams.get('monthlySpending') || '';
     document.getElementById('currentSalary').value = urlParams.get('currentSalary') || '';
 
+    
 
     const retirementAmount = urlParams.get('retirementAmountNeeded') || '0';
 
@@ -85,6 +86,14 @@ function clearError(input) {
     }
 }
 
+function updateElementContent(elementId, content) {
+    const element = document.getElementById(elementId);
+    if (element) {
+        element.textContent = content;
+        element.title = `完整数值：${content}`;
+    }
+}
+
 function calculateEPF() {
     const currentSalary = parseFloat(document.getElementById('currentSalary').value);
     const salaryIncreaseRate = parseFloat(document.getElementById('salaryIncreaseRate').value) / 100;
@@ -121,27 +130,30 @@ function calculateEPF() {
 
     return true;
 }
-
 function updateProgressInfo(currentAmount, targetAmount) {
-    const epfPercentage = (currentAmount / targetAmount) * 100;
-    const totalPercentage = Math.min(epfPercentage, 100);
+    const epfPercentage = Math.min((currentAmount / targetAmount) * 100, 100);
+    const totalPercentage = epfPercentage;
 
-    updateKPIValue('targetRetirementAmountShort', targetAmount);
-    updateKPIValue('epfAmountShort', currentAmount);
-    updateKPIValue('totalAmountShort', currentAmount);
+    // Update KPI values with hard-coded "RM " prefix
+    updateElementContent('targetRetirementAmountShort', `RM ${formatShortNumber(targetAmount)}`);
+    updateElementContent('epfAmountShort', `RM ${formatShortNumber(currentAmount)}`);
+    updateElementContent('totalAmountShort', `RM ${formatShortNumber(currentAmount)}`);
     
     const shortfall = Math.max(0, targetAmount - currentAmount);
-    updateKPIValue('shortfallShort', shortfall);
+    updateElementContent('shortfallShort', `RM ${formatShortNumber(shortfall)}`);
 
     const monthlyEstimate = (currentAmount * 0.04) / 12;
-    updateKPIValue('monthlyEstimateShort', monthlyEstimate);
+    updateElementContent('monthlyEstimateShort', `RM ${formatShortNumber(monthlyEstimate)}`);
 
+    // Update the progress bar
     document.querySelector('.progress-segment.epf').style.width = `${epfPercentage}%`;
-    document.querySelector('.progress-segment.remaining').style.width = `${100 - epfPercentage}%`;
+    document.querySelector('.progress-segment.remaining').style.width = `${Math.max(0, 100 - epfPercentage)}%`;
 
     // Update the completion percentage
-    document.getElementById('completionPercentage').textContent = epfPercentage.toFixed(1);
+    document.getElementById('completionPercentage').textContent = totalPercentage.toFixed(1);
 }
+
+
 
 function generateTable(currentSalary, inflationRate, currentEpf, epfRate, salaryIncreaseRate) {
     const yearsNeeded = parseInt(document.getElementById('yearsNeeded').value);
@@ -171,53 +183,44 @@ function generateTable(currentSalary, inflationRate, currentEpf, epfRate, salary
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    const progressButton = document.getElementById('progressButton');
-    const toggleEpfButton = document.getElementById('toggleEpfButton');
+
+    const buttonGroup = document.querySelector('.button-group');
+    const progressButton = buttonGroup.children[0];
+    const toggleEpfButton = buttonGroup.children[1];
     const progressInfo = document.getElementById('progressInfo');
     const epfCalculator = document.getElementById('epfCalculator');
 
+    if (progressButton && progressInfo) {
+        progressButton.addEventListener('click', function() {
+            if (progressInfo.style.display === 'none' || progressInfo.style.display === '') {
+                progressInfo.style.display = 'block';
+                this.textContent = '隐藏目标进度';
+            } else {
+                progressInfo.style.display = 'none';
+                this.textContent = '目标进度';
+            }
+        });
+    }
 
-    if (exportPdfButton) {
-        exportPdfButton.addEventListener('click', exportToPDF);
+    if (toggleEpfButton && epfCalculator) {
+        toggleEpfButton.addEventListener('click', function() {
+            if (epfCalculator.style.display === 'none' || epfCalculator.style.display === '') {
+                epfCalculator.style.display = 'block';
+                this.textContent = '隐藏 EPF 计算器';
+            } else {
+                epfCalculator.style.display = 'none';
+                this.textContent = '显示 EPF 计算器';
+            }
+        });
     }
 
 
     if (nextButton) {
-      nextButton.addEventListener('click', goToNextPage);
-    } else {
-      console.error('Next button not found');
-    }
+        nextButton.addEventListener('click', goToNextPage);
+      } else {
+        console.error('Next button not found');
+      }
 
-
-    if (progressButton) {
-        progressButton.addEventListener('click', function() {
-            const progressInfo = document.getElementById('progressInfo');
-            if (progressInfo) {
-                if (progressInfo.style.display === 'none') {
-                    progressInfo.style.display = 'block';
-                    this.textContent = '隐藏目标进度';
-                } else {
-                    progressInfo.style.display = 'none';
-                    this.textContent = '目标进度';
-                }
-            }
-        });
-    }
-
-    if (toggleEpfButton) {
-        toggleEpfButton.addEventListener('click', function() {
-            var calculator = document.getElementById('epfCalculator');
-            if (calculator) {
-                if (calculator.style.display === 'none' || calculator.style.display === '') {
-                    calculator.style.display = 'block';
-                    this.textContent = '隐藏 EPF 计算器';
-                } else {
-                    calculator.style.display = 'none';
-                    this.textContent = '显示 EPF 计算器';
-                }
-            }
-        });
-    }
 
     if (calculateButton) {
         calculateButton.addEventListener('click', function() {
@@ -226,6 +229,10 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+
+
+
+
 });
 
 function exportToPDF() {

@@ -4,6 +4,22 @@ document.addEventListener('DOMContentLoaded', function() {
     createDistributionChart();
     createGrowthChart();
 
+    const simulateAgainButton = document.getElementById('simulateAgainButton');
+    const saveScreenshotButton = document.getElementById('saveScreenshotButton');
+  
+    simulateAgainButton.addEventListener('click', function() {
+      window.location.href = 'welcome.html';
+    });
+  
+    saveScreenshotButton.addEventListener('click', function() {
+      html2canvas(document.body).then(function(canvas) {
+        const link = document.createElement('a');
+        link.download = '人生模拟结果.png';
+        link.href = canvas.toDataURL();
+        link.click();
+      });
+    });
+
     function getDataFromLocalStorage() {
         const keys = [
             'currentSalary',
@@ -40,11 +56,15 @@ document.addEventListener('DOMContentLoaded', function() {
             if (element) {
                 let value = data[key];
                 if (typeof value === 'number') {
-                    // 如果是比率，则格式化为百分比
-                    if (key.toLowerCase().includes('rate') || key === 'additionalPaymentPercentage') {
-                        value = (value * 100).toFixed(2) + '%';
+                    if (['epfRate', 'salaryIncreaseRate', 'houseAppreciationRate', 'dividendRate', 'growthRate'].includes(key)) {
+                        // Display these rates as is, without multiplying by 100
+                        value = value.toFixed(2) + '%';
+                    } else if (key === 'additionalPaymentPercentage') {
+                        // This one might already be in percentage form, so just add the % sign
+                        value = value.toFixed(2) + '%';
                     } else {
-                        value = formatNumber(value.toFixed(2));
+                        // For other numeric values, format as currency
+                        value = 'RM ' + formatNumber(value.toFixed(2));
                     }
                 }
                 element.textContent = value;
@@ -53,44 +73,109 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // 创建饼图的函数
-    function createPieChart(data) {
-        const additionalRentPayment = data.rentAmount * data.additionalPaymentPercentage;
-        const remainingAmount = Math.max(0, data.currentSalary - data.monthlySpending - data.monthlyStockInvestment - additionalRentPayment);
+    let salaryChart = null; // Global variable to store the chart instance
 
+    function createPieChart() {
         const ctx = document.getElementById('salaryChart').getContext('2d');
-        new Chart(ctx, {
+        
+        if (salaryChart) {
+            salaryChart.destroy();
+        }
+        
+        const data = getDataFromLocalStorage();
+        const currentSalary = data.currentSalary || 0;
+        const monthlySpending = data.monthlySpending || 0;
+        const monthlyStockInvestment = data.monthlyStockInvestment || 0;
+        const additionalRentPayment = ((data.rentAmount || 0) * (data.additionalPaymentPercentage || 0))/100;
+        const totalExpenses = monthlySpending + monthlyStockInvestment + additionalRentPayment;
+        const remainingAmount = Math.max(0, currentSalary - totalExpenses);
+    
+        const totalAmount = monthlySpending + monthlyStockInvestment + additionalRentPayment + remainingAmount;
+    
+        const chartData = [
+            { label: `月度支出: RM ${formatNumber(monthlySpending)} (${((monthlySpending / totalAmount) * 100).toFixed(2)}%)`, value: monthlySpending, color: '#FFD700' },
+            { label: `每月股票投资: RM ${formatNumber(monthlyStockInvestment)} (${((monthlyStockInvestment / totalAmount) * 100).toFixed(2)}%)`, value: monthlyStockInvestment, color: '#45B7D1' },
+            { label: `额外租金支付: RM ${formatNumber(additionalRentPayment)} (${((additionalRentPayment / totalAmount) * 100).toFixed(2)}%)`, value: additionalRentPayment, color: '#FF6B6B' },
+            { label: `剩余金额: RM ${formatNumber(remainingAmount)} (${((remainingAmount / totalAmount) * 100).toFixed(2)}%)`, value: remainingAmount, color: '#4ECDC4' }
+        ];
+    
+        salaryChart = new Chart(ctx, {
             type: 'pie',
             data: {
-                labels: ['月度支出', '每月股票投资', '额外租金支付', '剩余金额'],
+                labels: chartData.map(item => item.label),
                 datasets: [{
-                    data: [data.monthlySpending, data.monthlyStockInvestment, additionalRentPayment, remainingAmount],
-                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0']
+                    data: chartData.map(item => item.value),
+                    backgroundColor: chartData.map(item => item.color),
+                    borderColor: '#1C2841',
+                    borderWidth: 2
                 }]
             },
             options: {
                 responsive: true,
                 maintainAspectRatio: false,
+                layout: {
+                    padding: {
+                        top: 30,
+                        bottom: 30
+                    }
+                },
                 plugins: {
                     legend: {
-                        position: 'bottom'
+                        display: true,
+                        position: 'bottom',
+                        labels: {
+                            color: '#FFFFFF',
+                            font: {
+                                size: 14,
+                                family: "'Roboto', sans-serif"
+                            },
+                            padding: 10
+                        }
                     },
                     tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                const value = context.raw;
-                                label += new Intl.NumberFormat('zh-CN', { style: 'currency', currency: 'CNY' }).format(value);
-                                return label;
-                            }
-                        }
-                    }
+                        enabled: true
+                    },
+                
                 }
-            }
+            },
+            plugins: [{
+                afterDraw: function(chart) {
+                    var ctx = chart.ctx;
+                    chart.data.datasets.forEach(function(dataset, i) {
+                        var meta = chart.getDatasetMeta(i);
+                        if (!meta.hidden) {
+                            meta.data.forEach(function(element, index) {
+                                var dataValue = dataset.data[index];
+                                var percentage = ((dataValue / totalAmount) * 100).toFixed(1);
+                                
+                                var position = element.tooltipPosition();
+                                
+                                ctx.fillStyle = '#FFFFFF';
+                                ctx.font = 'bold 14px Roboto';
+                                ctx.textAlign = 'center';
+                                ctx.textBaseline = 'middle';
+                                
+                                if (percentage <= 9.9) {
+                                    // Display outside for small percentages
+                                    var midAngle = element.startAngle + (element.endAngle - element.startAngle) / 2;
+                                    var x = position.x + Math.cos(midAngle) * (chart.chartArea.width / 2 * 0.5);
+                                    var y = position.y + Math.sin(midAngle) * (chart.chartArea.height / 2 * 0.5);
+                                    ctx.fillText(percentage + '%', x, y);
+                                } else {
+                                    // Display inside for larger percentages
+                                    ctx.fillText(percentage + '%', position.x, position.y);
+                                }
+                            });
+                        }
+                    });
+                }
+            }]
         });
     }
+    
+    
+    // Call this function when you want to create or update the chart
+    createPieChart();
 
     // 初始化页面的主函数
     function initializePage() {
@@ -170,6 +255,7 @@ function updateElementContent(id, content) {
 function updateSummary() {
     const data = window.retirementData;
     const totalAmount = (data.epfAmount || 0) + (data.realEstateAmount || 0) + (data.stockAmount || 0);
+    const targetAmount = data.targetRetirementAmount || 1;
     const progressPercentage = data.targetRetirementAmount > 0 ? (totalAmount / data.targetRetirementAmount) * 100 : 0;
     const shortfall = Math.max(0, data.targetRetirementAmount - totalAmount);
     const monthlyEstimate = (totalAmount * 0.04) / 12; // Assuming 4% annual withdrawal rate
@@ -188,9 +274,10 @@ function updateSummary() {
     progressText.textContent = `${progressPercentage.toFixed(2)}%`;
 
 
-    const epfPercentage = totalAmount > 0 ? ((data.epfAmount || 0) / totalAmount * 100).toFixed(1) : 0;
-    const realEstatePercentage = totalAmount > 0 ? ((data.realEstateAmount || 0) / totalAmount * 100).toFixed(1) : 0;
-    const stockPercentage = totalAmount > 0 ? ((data.stockAmount || 0) / totalAmount * 100).toFixed(1) : 0;
+    const epfPercentage = ((data.epfAmount || 0) / targetAmount * 100).toFixed(1);
+    const realEstatePercentage = ((data.realEstateAmount || 0) / targetAmount * 100).toFixed(1);
+    const stockPercentage = ((data.stockAmount || 0) / targetAmount * 100).toFixed(1);
+
 
     updateComparisonItem('epfAmount', data.epfAmount, epfPercentage);
     updateComparisonItem('realEstateAmount', data.realEstateAmount, realEstatePercentage);
@@ -230,6 +317,8 @@ function updateSummary() {
     
     document.getElementById('stockAmount').textContent = `RM ${formatShortNumber(data.stockAmount)}`;
     document.getElementById('stockPercentage').textContent = `${stockPercentage}%`;
+
+    document.getElementById('monthlyEstimate2').textContent = `RM ${formatShortNumber(monthlyEstimate)}`;
 
     if (completionMessage) {
         if (progressPercentage >= 100) {

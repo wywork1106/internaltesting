@@ -5,16 +5,147 @@ let globalCurrentAge = 0;
 let globalRetirementAge = 0;
 let globalYearsNeeded = 0;
 
+
+
 document.addEventListener('DOMContentLoaded', function() {
     loadDataFromStorage();
+    loadURLParams();
+
+    document.getElementById('houseform').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (validateForm()) {
+            calculateHouseInvestment();
+        }
+    });
+
+    // Add event listeners to recalculate on input change
+    const inputs = document.querySelectorAll('#houseform input');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (validateForm()) {
+                calculateHouseInvestment();
+            }
+        });
+    });
+
+    // Existing event listeners
     document.getElementById('calculateButton').addEventListener('click', calculateHouseInvestment);
     document.getElementById('progressButton').addEventListener('click', toggleLifeProgress);
     document.getElementById('toggleHouseCalculatorButton').addEventListener('click', toggleHouseCalculator);
     document.getElementById('nextButton').addEventListener('click', verifyAndProceed);
+
+
+
+
 });
+
+function loadURLParams() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Load house investment parameters from URL if available
+    const housePrice = urlParams.get('housePrice');
+    const rentAmount = urlParams.get('rentAmount');
+    const houseAppreciationRate = urlParams.get('houseAppreciationRate');
+    const interestRate = urlParams.get('interestRate');
+    const additionalPaymentPercentage = urlParams.get('additionalPaymentPercentage');
+
+    if (housePrice) document.getElementById('housePrice').value = housePrice;
+    if (rentAmount) document.getElementById('rentAmount').value = rentAmount;
+    if (houseAppreciationRate) document.getElementById('houseAppreciationRate').value = houseAppreciationRate;
+    if (interestRate) document.getElementById('interestRate').value = interestRate;
+    if (additionalPaymentPercentage) document.getElementById('additionalPaymentPercentage').value = additionalPaymentPercentage;
+
+    // If all parameters are present, automatically calculate
+    if (housePrice && rentAmount && houseAppreciationRate && interestRate && additionalPaymentPercentage) {
+        calculateHouseInvestment();
+    }
+}
 
 function formatNumber(number) {
     return number.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
+function loadDataFromStorage() {
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Load data from URL parameters if available, otherwise from localStorage
+    globalRetirementAmountNeeded = parseFloat(urlParams.get('retirementAmountNeeded')) || parseFloat(localStorage.getItem('retirementAmountNeeded')) || 0;
+    globalEpfFinalAmount = parseFloat(urlParams.get('epfFinalAmount')) || parseFloat(localStorage.getItem('epfFinalAmount')) || 0;
+    globalCurrentAge = parseInt(urlParams.get('currentAge')) || parseInt(localStorage.getItem('currentAge')) || 0;
+    globalRetirementAge = parseInt(urlParams.get('retirementAge')) || parseInt(localStorage.getItem('retirementAge')) || 0;
+    globalYearsNeeded = parseInt(urlParams.get('yearsNeeded')) || parseInt(localStorage.getItem('yearsNeeded')) || 0;
+
+    if (globalRetirementAmountNeeded && globalEpfFinalAmount) {
+        updateElementContent('displayRetirementGoal', `RM ${formatNumber(globalRetirementAmountNeeded)}`);
+        updateElementContent('epfAmountShort', `RM ${formatShortNumber(globalEpfFinalAmount)}`);
+        updateLifeProgress();
+    } else {
+        alert('未找到所需数据。请先完成 EPF 计算。');
+        window.location.href = 'epf.html';
+    }
+
+    if (globalCurrentAge === 0 || globalRetirementAge === 0 || globalYearsNeeded === 0) {
+        alert('Age information not found. Please complete the EPF calculation first.');
+        window.location.href = 'epf.html';
+    }
+
+    // Load house investment parameters from URL if available
+    loadHouseInvestmentParams(urlParams);
+}
+
+function loadHouseInvestmentParams(urlParams) {
+    const housePrice = urlParams.get('housePrice');
+    const rentAmount = urlParams.get('rentAmount');
+    const houseAppreciationRate = urlParams.get('houseAppreciationRate');
+    const interestRate = urlParams.get('interestRate');
+    const additionalPaymentPercentage = urlParams.get('additionalPaymentPercentage');
+
+    if (housePrice) document.getElementById('housePrice').value = housePrice;
+    if (rentAmount) document.getElementById('rentAmount').value = rentAmount;
+    if (houseAppreciationRate) document.getElementById('houseAppreciationRate').value = houseAppreciationRate;
+    if (interestRate) document.getElementById('interestRate').value = interestRate;
+    if (additionalPaymentPercentage) document.getElementById('additionalPaymentPercentage').value = additionalPaymentPercentage;
+
+    // If all parameters are present, automatically calculate
+    if (housePrice && rentAmount && houseAppreciationRate && interestRate && additionalPaymentPercentage) {
+        calculateHouseInvestment();
+    }
+}
+
+function validateForm() {
+    const inputs = document.querySelectorAll('#houseForm input[required]');
+    let isValid = true;
+
+    inputs.forEach(input => {
+        if (input.value.trim() === '') {
+            showError(input, '此字段为必填项');
+            isValid = false;
+        } else {
+            clearError(input);
+        }
+    });
+
+    return isValid;
+}
+
+
+window.onload = function() {
+    document.getElementById('houseform').addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (validateForm()) {
+            calculateHouseInvestment();
+        }
+    });
+
+    // Add event listeners to recalculate on input change
+    const inputs = document.querySelectorAll('#houseForm input');
+    inputs.forEach(input => {
+        input.addEventListener('input', function() {
+            if (validateForm()) {
+                calculateHouseInvestment();
+            }
+        });
+    });
 }
 
 function formatShortNumber(number) {
@@ -74,6 +205,8 @@ function loadDataFromStorage() {
 }
 
 function calculateHouseInvestment() {
+    clearErrors(); // Add this function to clear previous error messages
+
     const housePrice = parseFloat(document.getElementById('housePrice').value);
     const rentAmount = parseFloat(document.getElementById('rentAmount').value);
     const houseAppreciationRate = parseFloat(document.getElementById('houseAppreciationRate').value) / 100;
@@ -81,9 +214,30 @@ function calculateHouseInvestment() {
     const additionalPaymentPercentage = parseFloat(document.getElementById('additionalPaymentPercentage').value) / 100;
     const yearsUntilRetirement = globalRetirementAge - globalCurrentAge;
 
-    if (isNaN(housePrice) || isNaN(rentAmount) || isNaN(houseAppreciationRate) || 
-        isNaN(interestRate) || isNaN(additionalPaymentPercentage)) {
-        alert('请输入有效的数值。');
+    let isValid = true;
+
+    if (isNaN(housePrice)) {
+        showError('housePrice', '请输入有效的屋子价格。');
+        isValid = false;
+    }
+    if (isNaN(rentAmount)) {
+        showError('rentAmount', '请输入有效的房租金额。');
+        isValid = false;
+    }
+    if (isNaN(houseAppreciationRate)) {
+        showError('houseAppreciationRate', '请输入有效的屋子增长率。');
+        isValid = false;
+    }
+    if (isNaN(interestRate)) {
+        showError('interestRate', '请输入有效的利息率。');
+        isValid = false;
+    }
+    if (isNaN(additionalPaymentPercentage)) {
+        showError('additionalPaymentPercentage', '请输入有效的额外还款百分比。');
+        isValid = false;
+    }
+
+    if (!isValid) {
         return false;
     }
 
@@ -95,6 +249,19 @@ function calculateHouseInvestment() {
     showElement('houseCalculator');
 
     return true;
+}
+
+function showError(inputId, message) {
+    const input = document.getElementById(inputId);
+    const errorElement = document.createElement('div');
+    errorElement.className = 'error';
+    errorElement.textContent = message;
+    input.parentNode.insertBefore(errorElement, input.nextSibling);
+}
+
+function clearErrors() {
+    const errorElements = document.querySelectorAll('.error');
+    errorElements.forEach(element => element.remove());
 }
 
 function generateTable(housePrice, rentAmount, houseAppreciationRate, 
