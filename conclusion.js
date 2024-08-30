@@ -11,14 +11,38 @@ document.addEventListener('DOMContentLoaded', function() {
           window.location.href = 'welcome.html';
         });
   
-    saveScreenshotButton.addEventListener('click', function() {
-        html2canvas(document.body).then(function(canvas) {
-          const link = document.createElement('a');
-          link.download = '人生模拟结果.png';
-          link.href = canvas.toDataURL();
-          link.click();
+        saveScreenshotButton.addEventListener('click', function() {
+            // Scroll to the top of the page
+            window.scrollTo(0, 0);
+    
+            // Wait for any scrolling to finish
+            setTimeout(function() {
+                html2canvas(document.body, {
+                    useCORS: true,
+                    scale: 2, // Increase resolution
+                    logging: false,
+                    scrollY: -window.scrollY // Adjust for scroll position
+                }).then(function(canvas) {
+                    // Convert canvas to blob
+                    canvas.toBlob(function(blob) {
+                        // Create a temporary URL for the blob
+                        const url = URL.createObjectURL(blob);
+                        
+                        // Create a temporary link and click it
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.download = '人生模拟结果.png';
+                        document.body.appendChild(link);
+                        link.click();
+                        document.body.removeChild(link);
+                        
+                        // Clean up the temporary URL
+                        URL.revokeObjectURL(url);
+                    }, 'image/png');
+                });
+            }, 100); // Small delay to ensure scroll is complete
         });
-      });
+
 
     function getDataFromLocalStorage() {
         const keys = [
