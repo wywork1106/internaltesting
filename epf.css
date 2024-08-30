@@ -417,3 +417,9 @@ tr:nth-child(even) {
     margin-bottom: 5px;
   }
 }
+
+.error {
+    color: #FF0000;  /* Red color */
+    font-size: 0.9em;
+    margin-top: 5px;
+}
